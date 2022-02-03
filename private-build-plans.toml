@@ -1,5 +1,5 @@
 # Generated from https://typeof.net/Iosevka/customizer
-# To build: npm run build -- contents::zed-iosevka
+# To build: npm run build -- contents::zed-mono
 
 [buildPlans.zed-mono]
 family = "Zed Mono"
