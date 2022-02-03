@@ -1,0 +1,62 @@
+$$include '../../../meta/macros.ptl'
+
+import [mix barmixL linreg clamp fallback] from '../../../support/utils'
+
+glyph-module
+
+glyph-block Letter-Cyrillic-De : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Latin-X : HalfXStrand
+
+	define [CyrDeShape top] : glyph-proc
+		local descenderOverflow : if SLAB SideJut ((RightSB - SB) * 0.075)
+		local xCutLeft SB
+		local xCutRight RightSB
+		local xTopLeft : mix xCutLeft xCutRight : StrokeWidthBlend 0.15 0.1
+		local xTopRight : mix xCutLeft xCutRight : StrokeWidthBlend 0.95 0.96
+		local swInner : AdviceStroke 2.75
+
+		include : HBarBottom (xCutLeft - descenderOverflow) (xCutRight + descenderOverflow) 0
+		include : VBarRight xTopRight 0 top swInner
+		include : dispiro
+			widths.lhs swInner
+			flat xTopLeft top
+			curl xTopLeft [mix 0 top 0.625]
+			g4   xCutLeft  Stroke
+		include : VBarLeft (xCutLeft - descenderOverflow) (-LongJut + HalfStroke) 0.1
+		include : VBarRight (xCutRight + descenderOverflow) (-LongJut + HalfStroke) 0.1
+
+		include : if SLAB
+			then : dispiro
+				widths.rhs
+				flat (xTopLeft - descenderOverflow) top
+				curl (xTopRight + descenderOverflow) top
+			else : HBarTop xTopLeft xTopRight top
+
+	create-glyph 'cyrl/De' 0x414 : glyph-proc
+		include : MarkSet.if
+		include : CyrDeShape CAP
+
+	create-glyph 'cyrl/de.upright' : glyph-proc
+		include : MarkSet.p
+		include : CyrDeShape XH
+
+	create-glyph 'cyrl/de.italic' : glyph-proc
+		include : MarkSet.b
+		include : dispiro
+			widths.lhs (Stroke * CThinB)
+			flat (RightSB - OX - Stroke * HVContrast * (1 - CThinB)) SmallSmoothA
+			curl (RightSB - OX - Stroke * HVContrast * (1 - CThinB)) (XH - SmallSmoothB)
+			arcvh
+			g4 (Middle - CorrectionOMidS) (CAP * 0.7 - O) [widths.lhs]
+			archv
+			flat (SB + OX) (XH - SmallSmoothA)
+			curl (SB + OX) SmallSmoothB
+			arcvh
+			g4 (Middle + CorrectionOMidS) O
+			archv
+			flat (RightSB - OX) SmallSmoothA
+			curl (RightSB - OX) (XH - SmallSmoothB)
+			quadControls 0 0.8
+			g4 (SB + Stroke * 1.1) CAP

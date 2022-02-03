@@ -1,0 +1,232 @@
+$$include '../../../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from '../../../support/utils'
+
+glyph-module
+
+glyph-block Symbol-Math-Arith : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-export PlusShape
+	glyph-block-import Symbol-Math-Frame : MathEnclosureSw
+	glyph-block-import Shared-Symbol-Shapes : DotVariants
+
+	define [PlusShape left right s sw] : union
+		HBar left right SymbolMid [fallback sw OperatorStroke]
+		VBar (Middle + [fallback s 0]) PlusTop PlusBot [fallback sw OperatorStroke]
+
+	create-glyph 'plus' '+' : PlusShape SB RightSB
+	create-glyph 'minus' 0x2212 : HBar SB RightSB SymbolMid OperatorStroke
+
+	create-glyph 'innerPlus' : PlusShape SB RightSB 0 MathEnclosureSw
+	create-glyph 'innerMinus' : HBar SB RightSB SymbolMid MathEnclosureSw
+
+	create-glyph 'hermetianConjugateMatrixPlus' 0x22B9 : difference
+		PlusShape SB RightSB
+		SquareAt Middle SymbolMid DotRadius
+
+	create-glyph 'plusminus' 0xB1 : glyph-proc
+		include : HBarBottom SB RightSB 0 OperatorStroke
+		include : refer-glyph "plus"
+
+	turned 'minusplus' 0x2213 'plusminus' Middle SymbolMid
+
+	define MultiplyHalfHeight : (RightSB - SB) / 2
+	define swBowtie : AdviceStroke 4
+	define [MultiplyMask p1 p2] : spiro-outline
+		corner (Middle - p1 * MultiplyHalfHeight) (SymbolMid - p1 * MultiplyHalfHeight)
+		corner (Middle + p2 * MultiplyHalfHeight) (SymbolMid + p2 * MultiplyHalfHeight)
+		corner (Middle + p2 * MultiplyHalfHeight) (SymbolMid - p2 * MultiplyHalfHeight)
+		corner (Middle - p1 * MultiplyHalfHeight) (SymbolMid + p1 * MultiplyHalfHeight)
+
+	define [MultiplyStroke1Shape s p1 p2] : dispiro
+		widths.center s
+		flat (Middle - p1 * MultiplyHalfHeight) (SymbolMid - p1 * MultiplyHalfHeight)
+		curl (Middle + p2 * MultiplyHalfHeight) (SymbolMid + p2 * MultiplyHalfHeight)
+
+	define [MultiplyStroke2Shape s p1 p2] : dispiro
+		widths.center s
+		flat (Middle - p1 * MultiplyHalfHeight) (SymbolMid + p1 * MultiplyHalfHeight)
+		curl (Middle + p2 * MultiplyHalfHeight) (SymbolMid - p2 * MultiplyHalfHeight)
+
+	create-glyph 'multiply' 0xD7 : glyph-proc
+		include : MultiplyStroke1Shape OperatorStroke 1 1
+		include : MultiplyStroke2Shape OperatorStroke 1 1
+
+	create-glyph 'bowtie' 0x22C8 : glyph-proc
+		include : union
+			intersection
+				MultiplyMask 1 1
+				union
+					VBarLeft SB (SymbolMid - MultiplyHalfHeight) (SymbolMid + MultiplyHalfHeight) swBowtie
+					VBarRight RightSB (SymbolMid - MultiplyHalfHeight) (SymbolMid + MultiplyHalfHeight) swBowtie
+			intersection
+				Rect ParenTop ParenBot SB RightSB
+				union
+					MultiplyStroke1Shape swBowtie 1 1
+					MultiplyStroke2Shape swBowtie 1 1
+
+	create-glyph 'bowtieLeft' 0x22C9 : glyph-proc
+		include : union
+			intersection
+				MultiplyMask 1 1
+				VBarLeft SB (SymbolMid - MultiplyHalfHeight) (SymbolMid + MultiplyHalfHeight) swBowtie
+			intersection
+				Rect ParenTop ParenBot SB [mix SB RightSB 2]
+				union
+					MultiplyStroke1Shape swBowtie 1 1
+					MultiplyStroke2Shape swBowtie 1 1
+
+	create-glyph 'bowtieRight' 0x22CA : glyph-proc
+		include : union
+			intersection
+				MultiplyMask 1 1
+				VBarRight RightSB (SymbolMid - MultiplyHalfHeight) (SymbolMid + MultiplyHalfHeight) swBowtie
+			intersection
+				Rect ParenTop ParenBot [mix RightSB SB 2] RightSB
+				union
+					MultiplyStroke1Shape swBowtie 1 1
+					MultiplyStroke2Shape swBowtie 1 1
+
+	create-glyph 'leftSemidirectProduct' 0x22CB : glyph-proc
+		include : MultiplyStroke1Shape OperatorStroke 1 0
+		include : MultiplyStroke2Shape OperatorStroke 1 1
+
+	create-glyph 'rightSemidirectProduct' 0x22CC : glyph-proc
+		include : MultiplyStroke1Shape OperatorStroke 1 1
+		include : MultiplyStroke2Shape OperatorStroke 0 1
+
+	create-glyph 'innerMultiplyStroke1' : glyph-proc
+		include : MultiplyStroke1Shape MathEnclosureSw 1 1
+
+	create-glyph 'innerMultiply' : glyph-proc
+		include : MultiplyStroke1Shape MathEnclosureSw 1 1
+		include : MultiplyStroke2Shape MathEnclosureSw 1 1
+
+	alias 'mathAsterisk' 0x2217 'opAsterisk.low'
+
+	do "dotted"
+		foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
+			local dr : DotRadius * kDotRadius * OperatorStroke / Stroke
+			create-glyph "dotplus.\(suffix)" : glyph-proc
+				local gap : AdviceStroke 12
+				include : union
+					DrawAt Middle (SymbolMid * 2 - OperatorStroke / 2) (dr - overshoot)
+					difference
+						refer-glyph 'plus'
+						DrawAt Middle (SymbolMid * 2 - OperatorStroke / 2) (dr + gap - overshoot)
+
+			create-glyph "minusDot.\(suffix)" : composite-proc [refer-glyph 'minus']
+				DrawAt Middle PlusTop (dr - overshoot)
+
+			create-glyph "geometricProportion.\(suffix)" : composite-proc
+				refer-glyph 'minus'
+				DrawAt (SB      + dr) PlusTop (dr - overshoot)
+				DrawAt (SB      + dr) PlusBot (dr - overshoot)
+				DrawAt (RightSB - dr) PlusTop (dr - overshoot)
+				DrawAt (RightSB - dr) PlusBot (dr - overshoot)
+
+			create-glyph "minusColon.\(suffix)" : glyph-proc
+				include : DrawAt Middle dr (dr - overshoot)
+				include : DrawAt Middle (XH - dr) (dr - overshoot)
+
+				local sbSquash 0.5
+
+				local delta : Math.max 0 : Middle - dr - SB * sbSquash
+				include : ApparentTranslate (+delta) (SymbolMid - XH / 2)
+
+				include : HBar (SB * sbSquash) (RightSB - DotSize) SymbolMid OperatorStroke
+
+			create-glyph "divide.\(suffix)" : glyph-proc
+				include : refer-glyph "minus"
+				define gap : (RightSB - SB) / 2
+				include : DrawAt Middle (SymbolMid + gap) (dr - overshoot)
+				include : DrawAt Middle (SymbolMid - gap) (dr - overshoot)
+
+			create-glyph "divisionTimes.\(suffix)" : glyph-proc
+				define sw : AdviceStroke 4
+				define gap : (RightSB - SB) / 2
+				include : MultiplyStroke1Shape sw 1 1
+				include : MultiplyStroke2Shape sw 1 1
+				include : HBar SB RightSB SymbolMid sw
+				include : DrawAt Middle (SymbolMid + gap) (dr * sw / OperatorStroke - overshoot)
+				include : DrawAt Middle (SymbolMid - gap) (dr * sw / OperatorStroke - overshoot)
+
+		select-variant 'dotplus' 0x2214 (follow -- 'punctuationDot')
+		select-variant 'minusDot' 0x2238 (follow -- 'punctuationDot')
+		select-variant 'geometricProportion' 0x223A (follow -- 'punctuationDot')
+		select-variant 'minusColon' 0x2239 (follow -- 'punctuationDot')
+		select-variant 'divide' 0xF7 (follow -- 'punctuationDot')
+		select-variant 'divisionTimes' 0x22C7 (follow -- 'punctuationDot')
+
+	do
+		define fine : AdviceStroke 5.5
+		define radius : Math.max ((RightSB - SB) / 8) (fine / 2)
+		define barOffset radius
+		define dotCenterOffset : OX + fine + radius
+		create-glyph 'originalOf' 0x22b6 : glyph-proc
+			include : difference
+				union
+					HBar (SB + barOffset) (RightSB - barOffset) SymbolMid OperatorStroke
+					DotAt (SB + dotCenterOffset) SymbolMid (radius + fine)
+					DotAt (RightSB - dotCenterOffset) SymbolMid (radius + fine)
+				DotAt (SB + dotCenterOffset) SymbolMid radius
+
+		create-glyph 'imageOf' 0x22b7 : glyph-proc
+			include : difference
+				union
+					HBar (SB + barOffset) (RightSB - barOffset) SymbolMid OperatorStroke
+					DotAt (SB + dotCenterOffset) SymbolMid (radius + fine)
+					DotAt (RightSB - dotCenterOffset) SymbolMid (radius + fine)
+				DotAt (RightSB - dotCenterOffset) SymbolMid radius
+
+		create-glyph 'multimap' 0x22b8 : glyph-proc
+			include : difference
+				union
+					HBar SB (RightSB - barOffset) SymbolMid OperatorStroke
+					DotAt (RightSB - dotCenterOffset) SymbolMid (radius + fine)
+				DotAt (RightSB - dotCenterOffset) SymbolMid radius
+
+		create-glyph 'leftMultimap' 0x27DC : glyph-proc
+			include : difference
+				union
+					HBar (SB + barOffset) RightSB SymbolMid OperatorStroke
+					DotAt (SB + dotCenterOffset) SymbolMid (radius + fine)
+				DotAt (SB + dotCenterOffset) SymbolMid radius
+
+	create-glyph 'wreathProduct' 0x2240 : glyph-proc
+		include : dispiro
+			widths.center OperatorStroke
+			g2 [mix SB RightSB 0.45] [mix PlusBot PlusTop 1.00]
+			g2 [mix SB RightSB 0.64] [mix PlusBot PlusTop 0.75]
+			g2 [mix SB RightSB 0.50] [mix PlusBot PlusTop 0.50]
+			g2 [mix SB RightSB 0.36] [mix PlusBot PlusTop 0.25]
+			g2 [mix SB RightSB 0.55] [mix PlusBot PlusTop 0.00]
+
+	for-width-kinds WideWidth1
+		create-glyph [MangleName 'innerPlusBig'] : glyph-proc
+			set-width MosaicWidth
+			include : union
+				HBar SB (MosaicWidth - SB) SymbolMid GeometryStroke
+				VBar MosaicMiddle [mix SymbolMid PlusTop MosaicWidthScalar] [mix SymbolMid PlusBot MosaicWidthScalar] GeometryStroke
+
+		create-glyph [MangleName 'innerMultiplyStroke1Big'] : glyph-proc
+			set-width MosaicWidth
+			local radius : (RightSB - SB) / 2 * [Math.sqrt MosaicWidthScalar]
+			include : dispiro
+				widths.center GeometryStroke
+				flat (MosaicMiddle - radius) (SymbolMid - radius)
+				curl (MosaicMiddle + radius) (SymbolMid + radius)
+
+		create-glyph [MangleName 'innerMultiplyStroke2Big'] : glyph-proc
+			set-width MosaicWidth
+			local radius : (RightSB - SB) / 2 * [Math.sqrt MosaicWidthScalar]
+			include : dispiro
+				widths.center GeometryStroke
+				flat (MosaicMiddle + radius) (SymbolMid - radius)
+				curl (MosaicMiddle - radius) (SymbolMid + radius)
+
+		create-glyph [MangleName 'innerMultiplyBig'] : glyph-proc
+			set-width MosaicWidth
+			include : refer-glyph : MangleName "innerMultiplyStroke1Big"
+			include : refer-glyph : MangleName "innerMultiplyStroke2Big"

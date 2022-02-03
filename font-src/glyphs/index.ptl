@@ -1,0 +1,161 @@
+import [Glyph] from '../support/glyph/index'
+import [GlyphStore] from '../support/glyph-store'
+import [GlyphBlock] from '../support/glyph-block'
+import as Gr from '../support/gr'
+import as SpiroKit from '../kits/spiro-kit'
+import as BooleKit from '../kits/boole-kit'
+import [ DesignParameters ] from "../meta/aesthetics"
+
+extern isFinite
+
+import [mix linreg clamp fallback] from '../support/utils'
+import [calculateMetrics setFontMetrics MarksetDiv GenDivFrame] from '../meta/aesthetics'
+
+$$include '../meta/macros.ptl'
+
+define [$NamedParameterPair$ l r] : begin
+	set this.left l
+	set this.right r
+	return this
+
+define [$donothing$] nothing
+
+export : define [buildGlyphs para recursive recursiveCodes] : begin
+	local glyphStore : new GlyphStore
+
+	define metrics : calculateMetrics para
+	define [object GlobalTransform UPM Middle CAP XH SB RightSB Contrast Stroke Width TanSlope OverlayPos Descender SymbolMid ParenTop ParenBot OperTop OperBot PlusTop PlusBot TackTop TackBot AdviceStroke] metrics
+
+	define fontMetrics { .head {.} .hhea {.} .os2 {.} .post {.} }
+	setFontMetrics para metrics fontMetrics
+
+	# Anchor parameters
+	define {AS_BASE ALSO_METRICS} {'AS-BASE' 'ALSO-METRICS'}
+
+	define DivFrame : GenDivFrame metrics
+	define MarkSet    [DivFrame 1 2].markSet
+
+	local nPending 0
+	local pickHash : if recursive
+		then : let [h {.}] : begin
+			foreach j [items-of recursive] : set h.(j) j
+			set nPending recursive.length
+			* h
+		else nothing
+
+	define [$createAndSaveGlyphImpl$ _1 _2 actions] : begin
+		local saveGlyphName    null
+		local ensuredGlyphName null
+		local unicode          null
+
+		piecewise
+			([typeof _1] === 'number' && _1) : begin
+				set saveGlyphName : 'uni' + [_1.toString 16 :.padStart 4 '0' :.toUpperCase]
+				set ensuredGlyphName saveGlyphName
+				set unicode          _1
+			([typeof _1] === 'string' && _1) : begin
+				set saveGlyphName    _1
+				set ensuredGlyphName saveGlyphName
+				set unicode          _2
+			true : begin
+				set saveGlyphName    null
+				set ensuredGlyphName "Temporary Glyph"
+				set unicode          null
+
+		if (saveGlyphName && pickHash && [not pickHash.(saveGlyphName)]) : return nothing
+		if para.verbose : console.log ensuredGlyphName
+
+		local glyphObject [new Glyph saveGlyphName]
+		glyphObject.setWidth Width
+		glyphObject.gizmo = GlobalTransform
+		glyphObject.include actions true true
+		warnAboutBrokenGlyph glyphObject ensuredGlyphName saveGlyphName
+
+		if saveGlyphName : begin
+			if (saveGlyphName.0 != '.' && [glyphStore.queryByName saveGlyphName])
+				throw : new Error "Glyph \(saveGlyphName) already exists"
+			glyphStore.addGlyph saveGlyphName glyphObject
+			if unicode : $assignUnicodeImpl$ glyphObject unicode
+
+			dec nPending
+
+		return glyphObject
+
+	define [warnAboutBrokenGlyph g ensuredGlyphName saveGlyphName] : begin
+		local complexity : g.geometry.measureComplexity
+
+		if ([not recursive] && complexity > 4096) : begin
+			console.log 'Possible broken shape found in' ensuredGlyphName 'Complexity' complexity
+			console.log 'Family' para.naming.family para.naming.weight para.naming.width para.naming.slope
+			if saveGlyphName : throw : new Error "Overcomplicated \(saveGlyphName)"
+
+	define [$assignUnicodeImpl$ g unicode] : begin
+		local u unicode
+		if ([typeof unicode] === "string") : begin
+			set u [unicode.codePointAt 0]
+		glyphStore.encodeGlyph u g
+
+	define [$defineGlyphBlockImpl$ $Capture$ blockName body] : begin
+		local glyphBlock : new GlyphBlock $Capture$ blockName body
+		if [not $Capture$.(blockName)] : set $Capture$.(blockName) glyphBlock
+		if [not $Capture$.$pendingGlyphBlocks$] : set $Capture$.$pendingGlyphBlocks$ {}
+		$Capture$.$pendingGlyphBlocks$.push glyphBlock
+
+	### Spiro constructions
+	# Basic knots
+	define SpiroFns : SpiroKit.SetupBuilders : object GlobalTransform Contrast Stroke [Superness DesignParameters.superness]
+	define BooleFns : BooleKit.SetupBuilders : object GlobalTransform Glyph
+
+	# Meta
+	define [tagged tag component] : function [ca cw] : begin
+		define t this.ctxTag
+		set this.ctxTag tag
+		define ret : this.include component ca cw
+		set this.ctxTag t
+		return ret
+
+	# IDKY, but wrapping "metrics" prevents Node.js on Arch modifying it.
+	define $$Capture$$ : object [metrics : Object.create metrics] $NamedParameterPair$ $donothing$ para recursive recursiveCodes glyphStore $createAndSaveGlyphImpl$ SpiroFns BooleFns MarkSet AS_BASE ALSO_METRICS pickHash buildGlyphs tagged DivFrame fontMetrics $assignUnicodeImpl$ $defineGlyphBlockImpl$
+
+	### HERE WE GO
+	run-glyph-module './common/shapes.js'
+	run-glyph-module './common/derivatives.js'
+	run-glyph-module './space/index.js'
+	run-glyph-module './marks/index.js'
+
+	# Unified letters
+	run-glyph-module './letter/shared.js'
+	run-glyph-module './letter/latin.js'
+	run-glyph-module './letter/greek.js'
+	run-glyph-module './letter/cyrillic.js'
+
+	# Numbers
+	run-glyph-module './number/index.js'
+
+	# Symbols
+	run-glyph-module './symbol/shared.js'
+	run-glyph-module './symbol/punctuation.js'
+	run-glyph-module './symbol/arrow.js'
+	run-glyph-module './symbol/geometric.js'
+	run-glyph-module './symbol/enclosure.js'
+	run-glyph-module './symbol/math.js'
+	run-glyph-module './symbol/letter.js'
+	run-glyph-module './symbol/braille.js'
+	run-glyph-module './symbol/mosaic.js'
+	run-glyph-module './symbol/pictograph.js'
+	run-glyph-module './symbol/ligation.js'
+
+	# Autobuilds
+	if [not recursive] : begin
+		run-glyph-module './auto-build/special-accented-letters.js'
+		run-glyph-module './auto-build/accents.js'
+		run-glyph-module './auto-build/composite.js'
+		run-glyph-module './auto-build/transformed.js'
+
+	foreach [gb : items-of $$Capture$$.$pendingGlyphBlocks$] : gb.resolve
+
+	Gr.linkSuffixPairGr glyphStore 'NWID' 'WWID' Gr.Nwid Gr.Wwid
+	Gr.linkSuffixPairGr glyphStore 'lnum' 'onum' Gr.Lnum Gr.Onum
+	Gr.linkSuffixGr     glyphStore 'aplForm'     Gr.AplForm
+
+	return : object glyphStore fontMetrics

@@ -1,0 +1,14 @@
+$$include '../../meta/macros.ptl'
+
+glyph-module
+
+export : define [apply] : begin
+	define $$Capture$$ this
+	run-glyph-module './shared-metrics.js'
+	run-glyph-module './above.js'
+	run-glyph-module './below.js'
+	run-glyph-module './horn-and-angle.js'
+	run-glyph-module './overlay.js'
+	run-glyph-module './tie.js'
+	run-glyph-module './composite.js'
+	run-glyph-module './doppelganger.js'

@@ -1,0 +1,69 @@
+$$include '../../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from '../../support/utils'
+import [Joining] from '../../support/gr'
+
+glyph-module
+
+glyph-block Symbol-Mosaic-NotDef : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+
+	create-glyph '.null' : glyph-proc
+		set-width 0
+		set currentGlyph.glyphRank   (9998)
+
+	create-glyph 'space' ' ' : glyph-proc
+		local df : DivFrame para.diversityI
+		set-width df.width
+
+	create-glyph 'markDemoBaseSpace' 0xE00E : glyph-proc
+		local df : DivFrame 1
+		set-width df.width
+		include : df.markSet.plus
+
+	create-glyph 'markBaseSpace' 0xE00D : glyph-proc
+		local df : DivFrame para.diversityI
+		set-width df.width
+		include : df.markSet.e
+
+	create-glyph 'nnbsp' 0x202F : glyph-proc
+		local df : DivFrame para.diversityII
+		set-width df.width
+
+	create-glyph 'sp1' : glyph-proc
+		local df : DivFrame 1
+		set-width df.width
+
+	create-glyph 'zwsp' 0x200B : glyph-proc
+		set-width 0
+
+	alias 'nonmarkingreturn' 0x000D 'zwsp'
+	alias 'nbsp' 0xA0 'space'
+
+	create-glyph 'cgj' 0x34F : glyph-proc
+		set-width 0
+		Joining.set currentGlyph Joining.Classes.Mid
+
+	alias 'enquad' 0x2000 'sp1'
+	alias 'ensp' 0x2002 'sp1'
+	alias 'brailleBlank' 0x2800 'sp1'
+	alias 'figureSpace' 0x2007 'sp1'
+	alias 'punctuationSpace' 0x2008 'sp1'
+
+	# The following spaces has explicit em-number. They will follow the em-number
+	# in quasiproportional, and identical to SPACE in monospace
+	define [FractionEmSp name code d] : create-glyph name code : glyph-proc
+		local df : DivFrame [if (para.diversityII < 1) (2 / d) 1]
+		set-width df.width
+
+	FractionEmSp 'threePerEmSp' 0x2004 3
+	FractionEmSp 'fourPerEmsp'  0x2005 4
+	FractionEmSp 'sixPerEmsp'   0x2006 6
+	FractionEmSp 'thinSp'       0x2009 6
+	FractionEmSp 'hairSp'       0x200A 12
+
+	for-width-kinds WideWidth1
+		create-glyph [MangleName 'emsp'] [MangleUnicode 0x2003] : glyph-proc
+			set-width : if (para.isQuasiProportional && MosaicWidthScalar > 1) UPM MosaicWidth
+		alias [MangleName 'emquad'] [MangleUnicode 0x2001] [MangleName 'emsp']

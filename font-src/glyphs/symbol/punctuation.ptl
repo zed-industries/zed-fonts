@@ -1,0 +1,29 @@
+$$include '../../meta/macros.ptl'
+
+export : define [apply] : begin
+	define $$Capture$$ this
+
+	run-glyph-module './punctuation/ampersand.js'
+	run-glyph-module './punctuation/ascii-marks.js'
+	run-glyph-module './punctuation/asterisk.js'
+	run-glyph-module './punctuation/at.js'
+	run-glyph-module './punctuation/bar.js'
+	run-glyph-module './punctuation/brackets.js'
+	run-glyph-module './punctuation/bullets.js'
+	run-glyph-module './punctuation/daggers.js'
+	run-glyph-module './punctuation/dashes.js'
+	run-glyph-module './punctuation/ellipsis.js'
+	run-glyph-module './punctuation/emotion.js'
+	run-glyph-module './punctuation/guillemet.js'
+	run-glyph-module './punctuation/interpuncts.js'
+	run-glyph-module './punctuation/joiners.js'
+	run-glyph-module './punctuation/other-phonetic.js'
+	run-glyph-module './punctuation/paragraph.js'
+	run-glyph-module './punctuation/percentages.js'
+	run-glyph-module './punctuation/quotes-and-primes.js'
+	run-glyph-module './punctuation/section.js'
+	run-glyph-module './punctuation/slashes-and-number-sign.js'
+	run-glyph-module './punctuation/small.js'
+	run-glyph-module './punctuation/ties.js'
+
+	run-glyph-module './punctuation/ligation-variants.js'

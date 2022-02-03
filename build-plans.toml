@@ -1,0 +1,1083 @@
+# Build options
+[buildOptions]
+optimizeWithTtx = false
+
+# Building plans
+# Sans
+[buildPlans.iosevka]
+family = "Iosevka"
+desc = "Default"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" off'
+export-glyph-names = true
+
+[buildPlans.iosevka-term]
+family = "Iosevka Term"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on'
+export-glyph-names = true
+
+[buildPlans.iosevka-fixed]
+family = "Iosevka Fixed"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on'
+export-glyph-names = true
+
+# Slab
+[buildPlans.iosevka-slab]
+family = "Iosevka Slab"
+desc = "Slab-serif"
+serifs = "slab"
+snapshotFamily = 'iosevka-slab'
+snapshotFeature = '"NWID" off'
+export-glyph-names = true
+
+[buildPlans.iosevka-term-slab]
+family = "Iosevka Term Slab"
+serifs = "slab"
+spacing = "term"
+snapshotFamily = 'iosevka-slab'
+snapshotFeature = '"NWID" on'
+export-glyph-names = true
+
+[buildPlans.iosevka-fixed-slab]
+family = "Iosevka Fixed Slab"
+serifs = "slab"
+spacing = "fixed"
+snapshotFamily = 'iosevka-slab'
+snapshotFeature = '"NWID" on'
+export-glyph-names = true
+
+# Curly
+[buildPlans.iosevka-curly]
+family  = "Iosevka Curly"
+desc = "Curly Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss20" on'
+export-glyph-names = true
+[buildPlans.iosevka-curly.variants]
+inherits = "ss20"
+
+[buildPlans.iosevka-term-curly]
+family  = "Iosevka Term Curly"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss20" on'
+export-glyph-names = true
+[buildPlans.iosevka-term-curly.variants]
+inherits = "ss20"
+
+[buildPlans.iosevka-fixed-curly]
+family  = "Iosevka Fixed Curly"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss20" on'
+export-glyph-names = true
+[buildPlans.iosevka-fixed-curly.variants]
+inherits = "ss20"
+
+# Curly Slab
+[buildPlans.iosevka-curly-slab]
+family  = "Iosevka Curly Slab"
+desc = "Curly Style, Slab-serif"
+serifs = "slab"
+snapshotFamily = 'iosevka-slab'
+snapshotFeature = '"ss20" on'
+export-glyph-names = true
+[buildPlans.iosevka-curly-slab.variants]
+inherits = "ss20"
+
+[buildPlans.iosevka-term-curly-slab]
+family  = "Iosevka Term Curly Slab"
+serifs = "slab"
+spacing = "term"
+snapshotFamily = 'iosevka-slab'
+snapshotFeature = '"NWID" on, "ss20" on'
+export-glyph-names = true
+[buildPlans.iosevka-term-curly-slab.variants]
+inherits = "ss20"
+
+[buildPlans.iosevka-fixed-curly-slab]
+family  = "Iosevka Fixed Curly Slab"
+serifs = "slab"
+spacing = "fixed"
+snapshotFamily = 'iosevka-slab'
+snapshotFeature = '"NWID" on, "ss20" on'
+export-glyph-names = true
+[buildPlans.iosevka-fixed-curly-slab.variants]
+inherits = "ss20"
+
+###################################################################################################
+# SSxx
+[buildPlans.iosevka-ss01]
+family = "Iosevka SS01"
+desc = "Andale Mono Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss01" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss01.variants]
+inherits = "ss01"
+
+[buildPlans.iosevka-term-ss01]
+family = "Iosevka Term SS01"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss01" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss01.variants]
+inherits = "ss01"
+
+[buildPlans.iosevka-fixed-ss01]
+family = "Iosevka Fixed SS01"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss01" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss01.variants]
+inherits = "ss01"
+
+
+[buildPlans.iosevka-ss02]
+family = "Iosevka SS02"
+desc = "Anonymous Pro Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss02" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss02.variants]
+inherits = "ss02"
+
+[buildPlans.iosevka-term-ss02]
+family = "Iosevka Term SS02"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss02" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss02.variants]
+inherits = "ss02"
+
+[buildPlans.iosevka-fixed-ss02]
+family = "Iosevka Fixed SS02"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss02" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss02.variants]
+inherits = "ss02"
+
+
+[buildPlans.iosevka-ss03]
+family = "Iosevka SS03"
+desc = "Consolas Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss03" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss03.variants]
+inherits = "ss03"
+
+[buildPlans.iosevka-term-ss03]
+family = "Iosevka Term SS03"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss03" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss03.variants]
+inherits = "ss03"
+
+[buildPlans.iosevka-fixed-ss03]
+family = "Iosevka Fixed SS03"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss03" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss03.variants]
+inherits = "ss03"
+
+
+[buildPlans.iosevka-ss04]
+family = "Iosevka SS04"
+desc = "Menlo Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss04" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss04.variants]
+inherits = "ss04"
+
+[buildPlans.iosevka-term-ss04]
+family = "Iosevka Term SS04"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss04" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss04.variants]
+inherits = "ss04"
+
+[buildPlans.iosevka-fixed-ss04]
+family = "Iosevka Fixed SS04"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss04" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss04.variants]
+inherits = "ss04"
+
+
+[buildPlans.iosevka-ss05]
+family = "Iosevka SS05"
+desc = "Fira Mono Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss05" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss05.variants]
+inherits = "ss05"
+
+[buildPlans.iosevka-term-ss05]
+family = "Iosevka Term SS05"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss05" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss05.variants]
+inherits = "ss05"
+
+[buildPlans.iosevka-fixed-ss05]
+family = "Iosevka Fixed SS05"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss05" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss05.variants]
+inherits = "ss05"
+
+
+[buildPlans.iosevka-ss06]
+family = "Iosevka SS06"
+desc = "Liberation Mono Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss06" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss06.variants]
+inherits = "ss06"
+
+[buildPlans.iosevka-term-ss06]
+family = "Iosevka Term SS06"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss06" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss06.variants]
+inherits = "ss06"
+
+[buildPlans.iosevka-fixed-ss06]
+family = "Iosevka Fixed SS06"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss06" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss06.variants]
+inherits = "ss06"
+
+
+[buildPlans.iosevka-ss07]
+family = "Iosevka SS07"
+desc = "Monaco Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss07" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss07.variants]
+inherits = "ss07"
+
+[buildPlans.iosevka-term-ss07]
+family = "Iosevka Term SS07"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss07" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss07.variants]
+inherits = "ss07"
+
+[buildPlans.iosevka-fixed-ss07]
+family = "Iosevka Fixed SS07"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss07" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss07.variants]
+inherits = "ss07"
+
+
+[buildPlans.iosevka-ss08]
+family = "Iosevka SS08"
+desc = "Pragmata Pro Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss08" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss08.variants]
+inherits = "ss08"
+
+[buildPlans.iosevka-term-ss08]
+family = "Iosevka Term SS08"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss08" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss08.variants]
+inherits = "ss08"
+
+[buildPlans.iosevka-fixed-ss08]
+family = "Iosevka Fixed SS08"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss08" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss08.variants]
+inherits = "ss08"
+
+
+[buildPlans.iosevka-ss09]
+family = "Iosevka SS09"
+desc = "Source Code Pro Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss09" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss09.variants]
+inherits = "ss09"
+
+[buildPlans.iosevka-term-ss09]
+family = "Iosevka Term SS09"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss09" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss09.variants]
+inherits = "ss09"
+
+[buildPlans.iosevka-fixed-ss09]
+family = "Iosevka Fixed SS09"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss09" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss09.variants]
+inherits = "ss09"
+
+
+[buildPlans.iosevka-ss10]
+family = "Iosevka SS10"
+desc = "Envy Code R Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss10" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss10.variants]
+inherits = "ss10"
+
+[buildPlans.iosevka-term-ss10]
+family = "Iosevka Term SS10"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss10" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss10.variants]
+inherits = "ss10"
+
+[buildPlans.iosevka-fixed-ss10]
+family = "Iosevka Fixed SS10"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss10" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss10.variants]
+inherits = "ss10"
+
+
+[buildPlans.iosevka-ss11]
+family = "Iosevka SS11"
+desc = "X Windows Fixed Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss11" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss11.variants]
+inherits = "ss11"
+
+[buildPlans.iosevka-term-ss11]
+family = "Iosevka Term SS11"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss11" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss11.variants]
+inherits = "ss11"
+
+[buildPlans.iosevka-fixed-ss11]
+family = "Iosevka Fixed SS11"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss11" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss11.variants]
+inherits = "ss11"
+
+
+[buildPlans.iosevka-ss12]
+family = "Iosevka SS12"
+desc = "Ubuntu Mono Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss12" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss12.variants]
+inherits = "ss12"
+
+[buildPlans.iosevka-term-ss12]
+family = "Iosevka Term SS12"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss12" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss12.variants]
+inherits = "ss12"
+
+[buildPlans.iosevka-fixed-ss12]
+family = "Iosevka Fixed SS12"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss12" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss12.variants]
+inherits = "ss12"
+
+
+[buildPlans.iosevka-ss13]
+family = "Iosevka SS13"
+desc = "Lucida Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss13" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss13.variants]
+inherits = "ss13"
+
+[buildPlans.iosevka-term-ss13]
+family = "Iosevka Term SS13"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss13" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss13.variants]
+inherits = "ss13"
+
+[buildPlans.iosevka-fixed-ss13]
+family = "Iosevka Fixed SS13"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss13" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss13.variants]
+inherits = "ss13"
+
+
+[buildPlans.iosevka-ss14]
+family = "Iosevka SS14"
+desc = "JetBrains Mono Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss14" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss14.variants]
+inherits = "ss14"
+
+[buildPlans.iosevka-term-ss14]
+family = "Iosevka Term SS14"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss14" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss14.variants]
+inherits = "ss14"
+
+[buildPlans.iosevka-fixed-ss14]
+family = "Iosevka Fixed SS14"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss14" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss14.variants]
+inherits = "ss14"
+
+
+[buildPlans.iosevka-ss15]
+family = "Iosevka SS15"
+desc = "IBM Plex Mono Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss15" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss15.variants]
+inherits = "ss15"
+
+[buildPlans.iosevka-term-ss15]
+family = "Iosevka Term SS15"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss15" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss15.variants]
+inherits = "ss15"
+
+[buildPlans.iosevka-fixed-ss15]
+family = "Iosevka Fixed SS15"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss15" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss15.variants]
+inherits = "ss15"
+
+
+[buildPlans.iosevka-ss16]
+family = "Iosevka SS16"
+desc = "PT Mono Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss16" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss16.variants]
+inherits = "ss16"
+
+[buildPlans.iosevka-term-ss16]
+family = "Iosevka Term SS16"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss16" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss16.variants]
+inherits = "ss16"
+
+[buildPlans.iosevka-fixed-ss16]
+family = "Iosevka Fixed SS16"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss16" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss16.variants]
+inherits = "ss16"
+
+
+[buildPlans.iosevka-ss17]
+family = "Iosevka SS17"
+desc = "Recursive Mono Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss17" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss17.variants]
+inherits = "ss17"
+
+[buildPlans.iosevka-term-ss17]
+family = "Iosevka Term SS17"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss17" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss17.variants]
+inherits = "ss17"
+
+[buildPlans.iosevka-fixed-ss17]
+family = "Iosevka Fixed SS17"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss17" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss17.variants]
+inherits = "ss17"
+
+
+[buildPlans.iosevka-ss18]
+family = "Iosevka SS18"
+desc = "Input Mono Style"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"ss18" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-ss18.variants]
+inherits = "ss18"
+
+[buildPlans.iosevka-term-ss18]
+family = "Iosevka Term SS18"
+spacing = "term"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss18" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-term-ss18.variants]
+inherits = "ss18"
+
+[buildPlans.iosevka-fixed-ss18]
+family = "Iosevka Fixed SS18"
+spacing = "fixed"
+snapshotFamily = 'iosevka'
+snapshotFeature = '"NWID" on, "ss18" on'
+export-glyph-names = true
+no-cv-ss = true
+[buildPlans.iosevka-fixed-ss18.variants]
+inherits = "ss18"
+
+
+###################################################################################################
+# Proportional families
+
+[buildPlans.iosevka-aile]
+family  = "Iosevka Aile"
+desc = "Sans-serif"
+spacing = "quasi-proportional"
+snapshotFamily = 'iosevka-aile'
+snapshotFeature = '"NWID" off'
+export-glyph-names = true
+
+[buildPlans.iosevka-aile.variants.design]
+capital-i = "serifless"
+capital-j = "serifless"
+capital-k = "straight-serifless"
+capital-m = "flat-bottom"
+capital-w = "straight-flat-top"
+a = "double-storey-serifless"
+d = "toothed-serifless"
+e = "flat-crossbar"
+f = "flat-hook"
+g = "single-storey-serifless"
+i = "serifless"
+j = "flat-hook-serifless"
+k = "straight-serifless"
+l = "serifless"
+r = "compact"
+t = "flat-hook"
+u = "toothed"
+w = "straight-flat-top"
+y = "straight"
+long-s = "flat-hook"
+eszet = "longs-s-lig"
+lower-iota = "flat-tailed"
+lower-lambda = "straight-turn"
+cyrl-ef = "serifless"
+cyrl-capital-ka = "symmetric-connected-serifless"
+cyrl-ka = "symmetric-connected-serifless"
+cyrl-capital-u = "straight"
+at = "fourfold"
+percent = "rings-continuous-slash"
+
+# Letterform control for U+1D670 ... U+1D6A3
+[buildPlans.iosevka-aile.derivingVariants.mathtt.design]
+capital-i = "serifed"
+capital-j = "serifless"
+capital-k = "straight-serifless"
+capital-m = "flat-bottom"
+capital-w = "straight-flat-top"
+a = "double-storey-serifless"
+d = "toothed-serifless"
+e = "flat-crossbar"
+f = "flat-hook"
+g = "single-storey-serifless"
+i = "serifed"
+j = "flat-hook-serifed"
+k = "straight-serifless"
+l = "serifed"
+r = "compact"
+t = "flat-hook"
+u = "toothed"
+w = "straight-flat-top"
+y = "straight"
+long-s = "flat-hook"
+eszet = "longs-s-lig"
+lower-iota = "flat-tailed"
+lower-lambda = "straight-turn"
+cyrl-ef = "serifless"
+cyrl-capital-ka = "symmetric-connected-serifless"
+cyrl-ka = "symmetric-connected-serifless"
+cyrl-capital-u = "straight"
+at = "fourfold"
+percent = "rings-continuous-slash"
+
+[buildPlans.iosevka-aile.widths.normal]
+shape = 600
+menu  = 5
+css   = "normal"
+
+
+
+[buildPlans.iosevka-etoile]
+family  = "Iosevka Etoile"
+desc = "Slab-serif"
+spacing = "quasi-proportional"
+serifs = 'slab'
+snapshotFamily = 'iosevka-etoile'
+snapshotFeature = '"NWID" off'
+export-glyph-names = true
+
+[buildPlans.iosevka-etoile.variants.design]
+at = 'fourfold'
+capital-w = 'straight-flat-top'
+f = "flat-hook-serifed"
+j = 'flat-hook-serifed'
+t = "flat-hook"
+w = 'straight-flat-top'
+
+[buildPlans.iosevka-etoile.variants.italic]
+f = "flat-hook-tailed"
+
+[buildPlans.iosevka-etoile.widths.normal]
+shape = 600
+menu  = 5
+css   = "normal"
+
+
+
+[buildPlans.iosevka-QP]
+family = "Iosevka QP"
+desc = "Customizer Preview Only Quasi-proportional Sans"
+spacing = "quasi-proportional"
+export-glyph-names = false
+
+[buildPlans.iosevka-QP-slab]
+family = "Iosevka QP Slab"
+desc = "Customizer Preview Only Quasi-proportional Slab"
+serifs = 'slab'
+spacing = "quasi-proportional"
+export-glyph-names = false
+
+[buildPlans.iosevka-QPE]
+family = "Iosevka QPE"
+desc = "Customizer Preview Only Quasi-proportional-extension-only Sans"
+spacing = "quasi-proportional-extension-only"
+export-glyph-names = false
+
+[buildPlans.iosevka-QPE-slab]
+family = "Iosevka QPE Slab"
+desc = "Customizer Preview Only Quasi-proportional-extension-only Slab"
+serifs = 'slab'
+spacing = "quasi-proportional-extension-only"
+export-glyph-names = false
+
+
+###################################################################################################
+# Collect plans
+
+[collectPlans.iosevka]
+release = true
+from = [
+	"iosevka",
+	"iosevka-term",
+	"iosevka-fixed"
+]
+
+[collectPlans.iosevka-slab]
+release = true
+from = [
+	"iosevka-slab",
+	"iosevka-term-slab",
+	"iosevka-fixed-slab"
+]
+
+[collectPlans.iosevka-curly]
+release = true
+from = [
+	"iosevka-curly",
+	"iosevka-term-curly",
+	"iosevka-fixed-curly"
+]
+
+[collectPlans.iosevka-curly-slab]
+release = true
+from = [
+	"iosevka-curly-slab",
+	"iosevka-term-curly-slab",
+	"iosevka-fixed-curly-slab"
+]
+
+[collectPlans.iosevka-ss01]
+release = true
+from = [
+	"iosevka-ss01",
+	"iosevka-term-ss01",
+	"iosevka-fixed-ss01"
+]
+
+[collectPlans.iosevka-ss02]
+release = true
+from = [
+	"iosevka-ss02",
+	"iosevka-term-ss02",
+	"iosevka-fixed-ss02"
+]
+
+[collectPlans.iosevka-ss03]
+release = true
+from = [
+	"iosevka-ss03",
+	"iosevka-term-ss03",
+	"iosevka-fixed-ss03"
+]
+
+[collectPlans.iosevka-ss04]
+release = true
+from = [
+	"iosevka-ss04",
+	"iosevka-term-ss04",
+	"iosevka-fixed-ss04"
+]
+
+[collectPlans.iosevka-ss05]
+release = true
+from = [
+	"iosevka-ss05",
+	"iosevka-term-ss05",
+	"iosevka-fixed-ss05"
+]
+
+[collectPlans.iosevka-ss06]
+release = true
+from = [
+	"iosevka-ss06",
+	"iosevka-term-ss06",
+	"iosevka-fixed-ss06"
+]
+
+[collectPlans.iosevka-ss07]
+release = true
+from = [
+	"iosevka-ss07",
+	"iosevka-term-ss07",
+	"iosevka-fixed-ss07"
+]
+
+[collectPlans.iosevka-ss08]
+release = true
+from = [
+	"iosevka-ss08",
+	"iosevka-term-ss08",
+	"iosevka-fixed-ss08"
+]
+
+[collectPlans.iosevka-ss09]
+release = true
+from = [
+	"iosevka-ss09",
+	"iosevka-term-ss09",
+	"iosevka-fixed-ss09"
+]
+
+[collectPlans.iosevka-ss10]
+release = true
+from = [
+	"iosevka-ss10",
+	"iosevka-term-ss10",
+	"iosevka-fixed-ss10"
+]
+
+[collectPlans.iosevka-ss11]
+release = true
+from = [
+	"iosevka-ss11",
+	"iosevka-term-ss11",
+	"iosevka-fixed-ss11"
+]
+
+[collectPlans.iosevka-ss12]
+release = true
+from = [
+	"iosevka-ss12",
+	"iosevka-term-ss12",
+	"iosevka-fixed-ss12"
+]
+
+[collectPlans.iosevka-ss13]
+release = true
+from = [
+	"iosevka-ss13",
+	"iosevka-term-ss13",
+	"iosevka-fixed-ss13"
+]
+
+[collectPlans.iosevka-ss14]
+release = true
+from = [
+	"iosevka-ss14",
+	"iosevka-term-ss14",
+	"iosevka-fixed-ss14"
+]
+
+[collectPlans.iosevka-ss15]
+release = true
+from = [
+	"iosevka-ss15",
+	"iosevka-term-ss15",
+	"iosevka-fixed-ss15"
+]
+
+[collectPlans.iosevka-ss16]
+release = true
+from = [
+	"iosevka-ss16",
+	"iosevka-term-ss16",
+	"iosevka-fixed-ss16"
+]
+
+[collectPlans.iosevka-ss17]
+release = true
+from = [
+	"iosevka-ss17",
+	"iosevka-term-ss17",
+	"iosevka-fixed-ss17"
+]
+
+[collectPlans.iosevka-ss18]
+release = true
+from = [
+	"iosevka-ss18",
+	"iosevka-term-ss18",
+	"iosevka-fixed-ss18"
+]
+
+[collectPlans.iosevka-aile]
+release = true
+from = ["iosevka-aile"]
+
+[collectPlans.iosevka-etoile]
+release = true
+from = ["iosevka-etoile"]
+
+###################################################################################################
+# Weight mappings (style => shape weight, menu weight, CSS weight)
+#   Shape weight : affects the shape of the glyphs
+#   Menu weight  : affects the font menu name
+#   CSS weight   : affects the webfont CSS "font-weight" property
+# IMPORTANT : Currently "menu" property only support 100, 200, 300, 400, 500, 600, 700, 800, 900.
+#              and "shape" properly only supports number between 100 and 900 (inclusive).
+
+[weights.thin]
+shape = 100
+menu  = 100
+css   = 100
+
+[weights.extralight]
+shape = 200
+menu  = 200
+css   = 200
+
+[weights.light]
+shape = 300
+menu  = 300
+css   = 300
+
+[weights.regular]
+shape = 400
+menu  = 400
+css   = 400
+
+[weights.medium]
+shape = 500
+menu  = 500
+css   = 500
+
+[weights.semibold]
+shape = 600
+menu  = 600
+css   = 600
+
+[weights.bold]
+shape = 700
+menu  = 700
+css   = 700
+
+[weights.extrabold]
+shape = 800
+menu  = 800
+css   = 800
+
+[weights.heavy]
+shape = 900
+menu  = 900
+css   = 900
+
+# slope mappings (style => slope angle, shape slope grade, menu slope, CSS slope)
+[slopes.upright]
+angle = 0
+shape = "upright"
+menu  = "upright"
+css   = "normal"
+
+[slopes.oblique]
+angle = 9.4
+shape = "oblique"
+menu  = "oblique"
+css   = "oblique"
+
+[slopes.italic]
+angle = 9.4
+shape = "italic"
+menu  = "italic"
+css   = "italic"
+
+# Width mappings (style => shape width, menu width, CSS stretch)
+#   Shape width   : affects the shape of the glyphs
+#   Menu width    : affects the font menu name
+#   CSS stretch   : affects the webfont CSS "font-stretch" property
+#
+# IMPORTANT : Currently "shape" property only support 3 ... 9
+#              and "menu" only support 1 ... 9
+
+[widths.normal]
+shape = 500
+menu  = 5
+css   = "normal"
+
+[widths.extended]
+shape = 600
+menu  = 7
+css   = "expanded"
+

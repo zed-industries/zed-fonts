@@ -1,0 +1,283 @@
+$$include '../../../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from '../../../support/utils'
+import [Dotless CvDecompose] from "../../../support/gr"
+
+glyph-module
+
+glyph-block Letter-Latin-Lower-T : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Shared : CreateCommaCaronComposition
+	glyph-block-import Letter-Shared-Shapes : CurlyTail FlatHookDepth ConnectedCedilla
+	glyph-block-import Letter-Shared-Shapes : DiagonalTailR DiagonalTailStdDepth
+	glyph-block-import Letter-Shared-Shapes : DToothlessRise SerifedArcEnd_RtlRhs
+	glyph-block-import Letter-Latin-S : SAutoSlabEnd
+	glyph-block-import Letter-Blackboard : BBS BBD
+
+	define dfNarrowT : DivFrame para.diversityF
+	define [xSmallTBarLeftT df] : df.middle - TBalance * df.div * df.div - HalfStroke * HVContrast
+	define [xSmallTCrossRefT df] : [xSmallTBarLeftT df] + df.div * TBalance2 + HalfStroke * HVContrast
+	define xSmallTBarLeft : xSmallTBarLeftT : DivFrame 1
+
+	define yCrossBar     XH
+	define yShortNeck1 : Math.max [mix XH CAP 0.5] ([mix XH CAP 0.875] - Stroke * 0.125)
+	define yShortNeck2 : Math.max [mix XH CAP 0.5] ([mix XH CAP 0.75]  - Stroke * 0.125)
+
+	define [SmallTHookShapeT sink offset top bot sw] : begin
+		local hookx : xSmallTBarLeft + (Width - SB * 2) * 0.8 + Stroke * 0.25 * HVContrast
+		local turn : [mix xSmallTBarLeft hookx 0.5] + CorrectionOMidS
+		local smb  : Math.max Hook ((turn - xSmallTBarLeft) * 1.2)
+
+		return : sink
+			widths.lhs sw
+			[if (sink == spiro-outline) corner flat] (offset + xSmallTBarLeft) top [heading Downward]
+			curl (offset + xSmallTBarLeft) (bot + smb)
+			hookend (bot + O + offset) (tight -- !para.isItalic)
+			g4 (hookx - offset) (bot + Hook)
+			if (sink == spiro-outline) {[corner (hookx - offset) top]} {}
+
+	define [SmallTCorssBar] : HCrossBar.top
+		xSmallTBarLeft + HalfStroke - LongJut + TBalance2
+		xSmallTBarLeft + HalfStroke + LongJut + TBalance2
+		begin yCrossBar
+
+	define [StandardBody __ top bot] : glyph-proc
+		local g : include : SmallTHookShapeT dispiro 0 top bot Stroke
+		set-base-anchor 'bottomright' g.knots.(g.knots.length - 1).x g.knots.(g.knots.length - 1).y
+		set-base-anchor 'above' (xSmallTBarLeft + 0.5 * Stroke * HVContrast) top
+		set-base-anchor 'below' [mix xSmallTBarLeft g.knots.(g.knots.length - 1).x : StrokeWidthBlend 0.375 0.5] bot
+		set-base-anchor 'overlay' (g.knots.0.x + 0.625 * Stroke * HVContrast) (XH * 0.58)
+
+		include : SmallTCorssBar
+
+	define [DiagTailedSmallTHookShape df top bot sw] : begin
+		local xMid : [xSmallTBarLeftT df] + HalfStroke * HVContrast
+		return : dispiro
+			flat xMid top [widths.center.heading sw Downward]
+			DiagonalTailR df xMid bot [DiagonalTailStdDepth [DivFrame : Math.sqrt df.div] sw] sw
+
+	define [DiagTailBody df top] : glyph-proc
+		local g : include : DiagTailedSmallTHookShape df top 0 Stroke
+		set-base-anchor 'above' ([xSmallTBarLeftT df] + 0.5 * Stroke * HVContrast) top
+		set-base-anchor 'overlay' (g.knots.0.x + 0.125 * Stroke * HVContrast) (XH * 0.58)
+
+		include : HCrossBar.top
+			[xSmallTCrossRefT df] - LongJut * [Math.sqrt df.div]
+			[xSmallTCrossRefT df] + LongJut * [Math.sqrt df.div]
+			begin yCrossBar
+
+	define [FlatBody df top bot] : TFlatShapeImpl false df top bot [mix 1 df.div 2] 0
+	define [RetroflexHookBody df top bot] : TFlatShapeImpl true df top bot [mix 1 df.div 2] 0
+	define [TFlatShapeImpl fRetroflex df top bot m ext] : glyph-proc
+		local xCrossLeft : mix 0 SB m
+		local xCrossRight : mix df.width df.rightSB m
+		local xBarLeft : [mix xCrossLeft xCrossRight 0.42] - Stroke * 0.375 * HVContrast
+		local hd : FlatHookDepth df
+		include : union
+			HCrossBar.top xCrossLeft (xCrossRight + ext) yCrossBar
+			dispiro
+				widths.rhs
+				if fRetroflex
+					straight.left.start (xBarLeft + HookX + HalfStroke * HVContrast) bot
+					list
+						flat xCrossRight bot
+						curl [Math.min (xBarLeft + hd.x) (xCrossRight - 1)] bot
+				archv.superness DesignParameters.tightHookSuperness
+				flat xBarLeft [if fRetroflex (bot + Hook + HalfStroke) hd.y]
+				curl xBarLeft top [heading Upward]
+		set-base-anchor 'above' (xBarLeft + 0.5 * Stroke * HVContrast) top
+		set-base-anchor 'topright' xCrossRight  CAP
+		set-base-anchor 'overlay' (xBarLeft + 0.625 * Stroke * HVContrast) (XH * 0.58)
+		set-base-anchor 'below' (HalfStroke * HVContrast + [Math.min (xBarLeft + hd.x / 2) (xCrossRight - 1)]) bot
+
+	define [CrossBody df top bot] : glyph-proc
+		include : VBar df.middle 0 top
+		include : HCrossBar.top (df.middle - LongJut * [Math.sqrt df.div]) (df.middle + LongJut * [Math.sqrt df.div]) yCrossBar
+		set-base-anchor 'overlay' df.middle (XH * 0.58)
+
+	define [CrossPLBody df top bot] : glyph-proc
+		include : CrossBody df top bot
+		include : HBarBottom df.middle RightSB 0
+
+	define [HooklessAsymmetricBody df top bot] : glyph-proc
+		define xBarLeft : xSmallTBarLeftT df
+		include : VBarLeft xBarLeft 0 top
+		include : difference
+			HCrossBar.top xBarLeft (df.middle + df.div * LongJut) yCrossBar
+			MaskLeft (xBarLeft - O)
+		set-base-anchor 'above' (xBarLeft + 0.5 * Stroke * HVContrast) top
+		set-base-anchor 'overlay' (xBarLeft + 0.625 * Stroke * HVContrast) (XH * 0.58)
+		set-base-anchor 'below' (xBarLeft + HalfStroke * HVContrast) bot
+
+	define [HooklessAsymmetricPLBody df top bot] : glyph-proc
+		include : HooklessAsymmetricBody df top bot
+
+		define xBarLeft : xSmallTBarLeftT df
+		include : HBarBottom xBarLeft RightSB 0
+
+	define [PhoneticLeftBody df top bot] : glyph-proc
+		include : TFlatShapeImpl false df top bot 1 0
+
+	define SmallTConfig : object
+		standard                       { [DivFrame  1] StandardBody             CAP         }
+		diagonalTailed                 {  dfNarrowT    DiagTailBody             CAP         }
+		flatHook                       {  dfNarrowT    FlatBody                 CAP         }
+		phoneticLeft                   {  dfNarrowT    FlatBody                 CAP         }
+		retroflexHookBase              {  dfNarrowT    RetroflexHookBody        CAP         }
+		cross                          {  dfNarrowT    CrossBody                CAP         }
+		hooklessAsymmetric             {  dfNarrowT    HooklessAsymmetricBody   CAP         }
+		crossPL                        {  dfNarrowT    CrossPLBody              CAP         }
+		hooklessAsymmetricPL           {  dfNarrowT    HooklessAsymmetricPLBody CAP         }
+
+		standardShortNeck              { [DivFrame  1] StandardBody             yShortNeck1 }
+		diagonalTailedShortNeck        {  dfNarrowT    DiagTailBody             yShortNeck1 }
+		flatHookShortNeck              {  dfNarrowT    FlatBody                 yShortNeck1 }
+		phoneticLeftShortNeck          {  dfNarrowT    FlatBody                 yShortNeck1 }
+		retroflexHookBaseShortNeck     {  dfNarrowT    RetroflexHookBody        yShortNeck1 }
+		crossShortNeck                 {  dfNarrowT    CrossBody                yShortNeck1 }
+		hooklessAsymmetricShortNeck    {  dfNarrowT    HooklessAsymmetricBody   yShortNeck1 }
+		crossPLShortNeck               {  dfNarrowT    CrossPLBody              yShortNeck1 }
+		hooklessAsymmetricPLShortNeck  {  dfNarrowT    HooklessAsymmetricPLBody yShortNeck1 }
+
+		standardShortNeck2             { [DivFrame  1] StandardBody             yShortNeck2 }
+		diagonalTailedShortNeck2       {  dfNarrowT    DiagTailBody             yShortNeck2 }
+		flatHookShortNeck2             {  dfNarrowT    FlatBody                 yShortNeck2 }
+		phoneticLeftShortNeck2         {  dfNarrowT    FlatBody                 yShortNeck2 }
+		retroflexHookBaseShortNeck2    {  dfNarrowT    RetroflexHookBody        yShortNeck2 }
+		crossShortNeck2                {  dfNarrowT    CrossBody                yShortNeck2 }
+		hooklessAsymmetricShortNeck2   {  dfNarrowT    HooklessAsymmetricBody   yShortNeck2 }
+		crossPLShortNeck2              {  dfNarrowT    CrossPLBody              yShortNeck2 }
+		hooklessAsymmetricPLShortNeck2 {  dfNarrowT    HooklessAsymmetricPLBody yShortNeck2 }
+
+	foreach { suffix { df body top } } [Object.entries SmallTConfig] : do
+		create-glyph "t.\(suffix)" : glyph-proc
+			set-width df.width
+			include : df.markSet.b
+			include : body df top 0
+
+		create-glyph "t/teshLeft.\(suffix)" : glyph-proc
+			define df1 : DivFrame 1
+			set-width df1.width
+			include : df1.markSet.b
+			include : body df1 top 0
+			include : HCrossBar.top df1.middle (df1.width + df1.middle) yCrossBar
+
+		create-glyph "tHookTop.\(suffix)" : glyph-proc
+			include [refer-glyph "t.\(suffix)"] AS_BASE ALSO_METRICS
+			currentGlyph.clearGeometry
+			local attach : currentGlyph.gizmo.unapply currentGlyph.baseAnchors.above
+			include : union
+				difference [body df top 0] [MaskAbove XH]
+				VerticalHook attach.x XH HookX (-Hook)
+
+		if (body === StandardBody) : create-glyph "tLTail.\(suffix)" : glyph-proc
+			include : MarkSet.if
+			include [refer-glyph "t.\(suffix)"] AS_BASE ALSO_METRICS
+			local attach : currentGlyph.gizmo.unapply currentGlyph.baseAnchors.bottomright
+			include : VBarRight attach.x 0 attach.y
+			include : VerticalHook (attach.x - HalfStroke * HVContrast) 0 (-HookX) Hook
+
+		create-glyph "tRTail.\(suffix)" : glyph-proc
+			set-width df.width
+			include : df.markSet.if
+			include : body df top Descender
+
+		turned "turnt.\(suffix)" nothing "t.\(suffix)" df.middle (XH / 2) [df.markSet.p]
+
+		create-glyph "tCurlyTal.\(suffix)" : glyph-proc
+			include : MarkSet.b
+			local fine : AdviceStroke 3.5
+			local rinner : LongJut / 2 - fine / 2
+			local x2 : mix SB xSmallTBarLeft 0.4
+			local y2 : -fine
+			include : HBarTop (xSmallTBarLeft + HalfStroke - LongJut + TBalance2) (xSmallTBarLeft + HalfStroke + LongJut + TBalance2) XH
+			include : dispiro
+				widths.lhs
+				flat xSmallTBarLeft top [heading Downward]
+				curl xSmallTBarLeft (fine + rinner * 2)
+				CurlyTail fine rinner (xSmallTBarLeft+ Stroke * HVContrast) 0 (xSmallTBarLeft + Stroke * HVContrast + LongJut) x2 y2
+
+	select-variant 't' 't'
+	select-variant 't/teshLeft' (follow -- 't')
+	select-variant 't/phoneticLeft1' (shapeFrom -- 't')
+	select-variant 't/phoneticLeft2' (shapeFrom -- 't')
+	select-variant 'turnt' 0x287 (follow -- 't')
+	CreateCommaCaronComposition 't' 'tcaron' 0x165
+	derive-glyphs 'tCedilla' 0x163 't' ConnectedCedilla
+
+	select-variant "tHookTop" 0x1AD
+	select-variant 'tLTail' 0x1AB
+	select-variant 'tRTail' 0x288
+	select-variant 'tCurlyTal' 0x236 (follow -- 'tLTail')
+
+	# U+01BE is catually "t" and "s" combined together
+	define SLAB-NONE        0
+	define SLAB-CLASSICAL   1
+	define SLAB-INWARD      2
+	define [TsLigStrokeShape stroke top sb] : begin
+		define smooth : adviceSSmooth (XH + 0.5 * Smooth) (-1) stroke
+		return : dispiro
+			widths.lhs stroke
+			flat xSmallTBarLeft top [heading Downward]
+			curl xSmallTBarLeft XH [heading Downward]
+			alsoThru.g2 0.5 0.5 [widths.center stroke]
+			g4   RightSB (smooth) [widths.rhs stroke]
+			match sb
+				[Just SLAB-CLASSICAL] : SerifedArcEnd_RtlRhs SB Middle 0 stroke SHook
+				[Just SLAB-INWARD] : list
+					arcvh
+					g4 (Middle + CorrectionOMidX * stroke) O
+					g4 SB DToothlessRise
+				__ : list
+					hookend O (sw -- stroke) (swItalicAdj -- Stroke)
+					g4      SB SHook
+
+	define TSUpperConfig : object
+		standard            { CAP         }
+		standardShortNeck   { yShortNeck1 }
+		standardShortNeck2  { yShortNeck2 }
+
+	foreach { suffix { yTop } } [Object.entries TSUpperConfig] : do
+		create-glyph "tsLig/upperHalf.\(suffix)" : glyph-proc
+			set-base-anchor 'cvDecompose' 0 0
+			include : difference
+				TsLigStrokeShape Stroke top false
+				MaskBelow XH
+			include : SmallTCorssBar
+
+	define TSLowerConfig : object
+		serifless               { SLAB-NONE      }
+		bilateralSerifed        { SLAB-CLASSICAL }
+		bilateralInwardSerifed  { SLAB-INWARD    }
+
+	foreach { suffix { doBS } } [Object.entries TSLowerConfig] : do
+		create-glyph "tsLig/lowerHalf.\(suffix)" : glyph-proc
+			include : MarkSet.b
+			set-mark-anchor 'cvDecompose' 0 0
+			include : intersection
+				TsLigStrokeShape Stroke CAP doBS
+				MaskBelow XH
+			include : SAutoSlabEnd   doBS 0  Stroke Hook
+
+	select-variant 'tsLig/upperHalf'
+	select-variant 'tsLig/lowerHalf'
+
+	create-glyph "tsLig" 0x1BE : glyph-proc
+		include [refer-glyph 'tsLig/upperHalf'] AS_BASE ALSO_METRICS
+		include [refer-glyph 'tsLig/lowerHalf']
+		CvDecompose.set currentGlyph { 'tsLig/upperHalf' 'tsLig/lowerHalf' }
+
+	create-glyph 'mathbb/t' 0x1D565 : glyph-proc
+		include : HBarTop xSmallTBarLeft (xSmallTBarLeft + BBD) CAP BBS
+		include : SmallTHookShapeT dispiro 0 CAP 0 BBS
+		include : intersection
+			VBarLeft (xSmallTBarLeft + BBD) 0 CAP BBS
+			SmallTHookShapeT spiro-outline 1 CAP 0 BBS
+		include : difference
+			HCrossBar.top
+				xSmallTBarLeft + (BBD / 2) - LongJut + TBalance2
+				xSmallTBarLeft + (BBD / 2) + LongJut + TBalance2
+				begin yCrossBar
+				begin BBS
+			Rect CAP 0 xSmallTBarLeft (xSmallTBarLeft + BBD)

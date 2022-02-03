@@ -1,0 +1,101 @@
+$$include '../../../meta/macros.ptl'
+
+import [mix barmixL linreg clamp fallback] from '../../../support/utils'
+import [DesignParameters] from '../../../meta/aesthetics'
+
+glyph-module
+
+glyph-block Letter-Greek-Upper-Phi : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Shared-Shapes : FlatHookDepth
+
+	define [VarPhiRing fFlatTB df y1 y2] : glyph-proc
+		local gap : Math.max df.mvs : 0.25 * (df.rightSB - df.leftSB)
+		include : VBar df.middle y1 y2 df.mvs
+		include : if fFlatTB
+			OShapeFlatTB y2 y1 df.leftSB df.rightSB df.mvs (SmoothA * df.div) (SmoothB * df.div) gap
+			OShape y2 y1 df.leftSB df.rightSB df.mvs (SmoothA * df.div) (SmoothB * df.div)
+
+	define [GrekCapitalPhiImpl fFlatTB df] : glyph-proc
+		local y1 : mix [if SLAB Stroke 0] [if SLAB (CAP - Stroke) CAP] 0.125
+		local y2 : mix [if SLAB Stroke 0] [if SLAB (CAP - Stroke) CAP] 0.875
+		include : VarPhiRing fFlatTB df y1 y2
+		include : VBar df.middle 0 (y1 + HalfStroke)
+		include : VBar df.middle (y2 - HalfStroke) CAP
+
+		if SLAB : begin
+			include : tagged 'serifMT' : CenterTopSerif df.middle CAP MidJutSide
+			include : tagged 'serifMB' : CenterBottomSerif df.middle 0 MidJutSide
+
+	create-glyph 'grek/Phi' 0x3A6 : glyph-proc
+		local df : DivFrame para.diversityM 3
+		set-width df.width
+		include : df.markSet.capital
+		include : GrekCapitalPhiImpl 0 df
+
+	create-glyph 'cyrl/Ef' 0x424 : glyph-proc
+		local df : DivFrame para.diversityM 3
+		set-width df.width
+		include : df.markSet.capital
+		include : GrekCapitalPhiImpl 1 df
+
+	create-glyph 'grek/varphi' 0x3D5 : glyph-proc
+		local df : DivFrame para.diversityM 3
+		set-width df.width
+		include : df.markSet.if
+
+		include : VarPhiRing 0 df 0 XH
+		include : VBar df.middle Descender HalfStroke
+		include : VBar df.middle (XH - HalfStroke) CAP
+
+	create-glyph 'cyrl/ef.serifless' : glyph-proc
+		local df : DivFrame para.diversityM 3
+		set-width df.width
+		include : df.markSet.if
+
+		include : VarPhiRing 1 df 0 XH
+		include : VBar df.middle Descender HalfStroke
+		include : VBar df.middle (XH - HalfStroke) CAP
+
+	create-glyph 'cyrl/ef.topSerifed' : glyph-proc
+		local df : DivFrame para.diversityM 3
+		include [refer-glyph 'cyrl/ef.serifless'] AS_BASE ALSO_METRICS
+		include : tagged 'serifMT' : LeftwardTopSerif df.middle CAP Jut
+
+	create-glyph 'cyrl/ef.serifed' : glyph-proc
+		local df : DivFrame para.diversityM 3
+		include [refer-glyph 'cyrl/ef.serifless'] AS_BASE ALSO_METRICS
+		include : tagged 'serifMT' : LeftwardTopSerif df.middle CAP Jut
+		include : tagged 'serifMB' : CenterBottomSerif df.middle Descender Jut
+
+	create-glyph 'cyrl/ef.cursive' : glyph-proc
+		local df : DivFrame para.diversityM 3
+		set-width df.width
+		include : df.markSet.if
+
+		include : VarPhiRing 1 df 0 XH
+		local hd : FlatHookDepth df
+
+		local xCrossLeft  : mix 0         df.leftSB   [mix 1 df.div 2]
+		local xCrossRight : mix df.width  df.rightSB  [mix 1 df.div 2]
+
+		local xBarLeft    : df.middle - HalfStroke * HVContrast
+		local xBarRight   : df.middle + HalfStroke * HVContrast
+
+		include : dispiro
+			flat xCrossRight CAP [widths.lhs]
+			curl [Math.min (xBarLeft + hd.x) (xCrossRight - 0.1)] CAP
+			archv
+			flat xBarLeft [Math.max XH (CAP - hd.y)]
+			curl xBarLeft (XH + O)
+
+		include : dispiro
+			flat xCrossLeft Descender [widths.lhs]
+			curl [Math.max (xBarRight - hd.x) (xCrossLeft + 0.1)] Descender
+			archv
+			flat xBarRight [Math.min 0 (Descender + hd.y)]
+			curl xBarRight (0 - O)
+
+	select-variant 'cyrl/ef' 0x444
+	select-variant 'latn/phi' 0x278 (shapeFrom -- 'cyrl/ef')

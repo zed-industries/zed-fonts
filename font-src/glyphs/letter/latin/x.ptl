@@ -1,0 +1,244 @@
+$$include '../../../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from '../../../support/utils'
+import [Dotless CvDecompose MathSansSerif] from "../../../support/gr"
+
+glyph-module
+
+glyph-block Letter-Latin-X : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Shared-Shapes : ShoulderMidKnotLhsRev SerifFrame WithAIHSerifsMask
+	glyph-block-import Letter-Shared-Shapes : DiagonalTailInnerRadius DiagonalTailF
+	glyph-block-import Letter-Shared-Shapes : CyrDescender CyrHookDescender
+	glyph-block-export HalfXStrand XStrand
+
+	define [HalfXStrand stb slab _leftx lefty rightx righty turn pStraight tension _fine] : glyph-proc
+		local sbCor : if stb ([StrokeWidthBlend 1 6] * OX * ([Math.abs (lefty - righty)] / CAP)) 0
+		local leftx : _leftx + ((HalfStroke * HVContrast + sbCor) * [if (rightx > _leftx) 1 (-1)])
+		local fine  : (_fine || Stroke) * 0.5
+
+		if stb : begin
+			local hst : HalfStroke * [DiagCor (righty - lefty) (rightx - leftx) 0 0]
+			local hse : HalfStroke * [Math.min 0.97 ([AdviceStroke 3] / Stroke)]
+			include : dispiro
+				corner leftx lefty [widths.heading hst hst [if (lefty < righty) Upward Downward]]
+				corner rightx righty [widths hse hse]
+
+		: else : begin
+			local height : Math.abs (lefty - righty)
+			local slabClearance : if slab [AdviceStroke2 2 3 height] 0
+			local turnyleft : mix lefty righty [if slab [Math.max turn (slabClearance / height)] turn]
+			local cyleft : mix turnyleft righty tension
+			local straightxleft : mix leftx rightx pStraight
+			local straightyleft : mix cyleft righty pStraight
+			include : dispiro
+				widths.center
+				flat leftx lefty [heading [if (lefty < righty) Upward Downward]]
+				curl leftx turnyleft [heading [if (lefty < righty) Upward Downward]]
+				quadControls 0 ((cyleft - turnyleft) / (straightyleft - turnyleft)) 24
+				flat straightxleft straightyleft
+				curl rightx righty
+
+	define [XStrand stb slab _leftx lefty _rightx righty turn pStraight tension] : glyph-proc
+		local middlex : mix _leftx _rightx 0.5
+		local middley : mix lefty righty 0.5
+
+		include : HalfXStrand stb slab _leftx lefty middlex middley turn pStraight tension
+		include : HalfXStrand stb slab _rightx righty middlex middley turn pStraight tension
+
+	define [UpperXBase fStraight] : union
+		XStrand fStraight SLAB SB 0 RightSB CAP 0.1 0.4 0.28
+		XStrand fStraight SLAB SB CAP RightSB 0 0.1 0.4 0.28
+
+	define [XSerifs top bot] : let [sf : SerifFrame top bot SB RightSB]
+		composite-proc sf.lt.full sf.rt.full sf.lb.full sf.rb.full
+	define [XMotionSerifs top] : glyph-proc
+		include : tagged 'serifLT' : LeftwardTopSerif SB top SideJut
+	define [XMotionSerifsBilateral top bot] : glyph-proc
+		include : tagged 'serifLT' : LeftwardTopSerif SB top SideJut
+		include : tagged 'serifRB' : RightwardBottomSerif RightSB bot SideJut
+
+	create-glyph 'X.straightSerifless' : glyph-proc
+		include : MarkSet.capital
+		include : UpperXBase true
+	create-glyph 'X.curlySerifless' : glyph-proc
+		include : MarkSet.capital
+		include : UpperXBase false
+	create-glyph 'X.straightSerifed' : glyph-proc
+		include : MarkSet.capital
+		include : WithAIHSerifsMask CAP 0 SB RightSB : UpperXBase true
+		include : XSerifs CAP 0
+	create-glyph 'X.curlySerifed' : glyph-proc
+		include : MarkSet.capital
+		include : WithAIHSerifsMask CAP 0 SB RightSB : UpperXBase false
+		include : XSerifs CAP 0
+	create-glyph 'X.straightMotionSerifed' : glyph-proc
+		include : MarkSet.capital
+		include : UpperXBase true
+		include : XMotionSerifs CAP
+	create-glyph 'X.curlyMotionSerifed' : glyph-proc
+		include : MarkSet.capital
+		include : UpperXBase false
+		include : XMotionSerifs CAP
+
+	define [LowerXBase fStraight] : begin
+		local turn    : if SLAB 0.1  0.1
+		local tension : if SLAB 0.24 0.24
+		union
+			XStrand fStraight SLAB SB 0 RightSB XH turn 0.4 tension
+			XStrand fStraight SLAB SB XH RightSB 0 turn 0.4 tension
+
+	create-glyph 'x.straightSerifless' : glyph-proc
+		include : MarkSet.e
+		include : LowerXBase true
+	create-glyph 'x.curlySerifless' : glyph-proc
+		include : MarkSet.e
+		include : LowerXBase false
+	create-glyph 'x.straightSerifed' : glyph-proc
+		include : MarkSet.e
+		include : WithAIHSerifsMask XH 0 SB RightSB : LowerXBase true
+		include : XSerifs XH 0
+	create-glyph 'x.curlySerifed' : glyph-proc
+		include : MarkSet.e
+		include : WithAIHSerifsMask XH 0 SB RightSB : LowerXBase false
+		include : XSerifs XH 0
+	create-glyph 'x.straightMotionSerifed' : glyph-proc
+		include : MarkSet.e
+		include : LowerXBase true
+		include : XMotionSerifs XH
+	create-glyph 'x.curlyMotionSerifed' : glyph-proc
+		include : MarkSet.e
+		include : LowerXBase false
+		include : XMotionSerifs XH
+
+	define [XCursiveHalfShape top fFlatEnd] : begin
+		local sma : SmoothAOf (Smooth * 0.8) (Width / 2)
+		local smb : SmoothBOf (Smooth * 0.8) (Width / 2)
+
+		define kThin 0.550
+		define swEnd : AdviceStroke 2.75
+		define swMid : AdviceStroke 3
+		define xCenterRight : Middle + HVContrast * swMid / 2
+		define xCenterLeft  : Middle - HVContrast * swMid / 2
+		define xTurn : mix (RightSB - swEnd * HVContrast) xCenterRight 0.5
+		define hook1Depth : Hook + Stroke * 0.125
+		define hook1StraightDepth : Math.min
+			hook1Depth - swEnd * 1.125
+			Math.max 1 : hook1Depth / 5 - swEnd / 4
+
+		define fineMid : swMid * kThin
+		define rIn : Math.max (0.2 * (RightSB - SB) - 0.7 * Stroke * HVContrast) [AdviceStroke 16]
+		define flatHookDepth : 0.7 * (RightSB - SB) - swEnd - 1.5 * rIn
+
+		return : union
+			dispiro
+				curl (RightSB - OX) (top - hook1Depth) [widths.lhs.heading swEnd Upward]
+				flat (RightSB - OX) (top - hook1Depth + hook1StraightDepth) [heading Upward]
+				arcvh 16
+				ShoulderMidKnotLhsRev (xTurn) (top - O) fineMid swEnd (-1) (-1)
+				archv 16
+				flat (xCenterRight - HVContrast * fineMid) (top - sma) [widths.lhs fineMid]
+				curl (xCenterRight - HVContrast * fineMid) (top / 2 + O)
+			if fFlatEnd
+			: then : dispiro
+				flat (xCenterRight - 0.5 * HVContrast * fineMid) (top / 2 - O) [widths.center fineMid]
+				curl (xCenterRight - 0.5 * HVContrast * fineMid) smb
+				arcvh 16
+				flat [mix xCenterRight RightSB 0.5] HalfStroke [widths.center.heading Stroke Rightward]
+				curl RightSB HalfStroke [heading Rightward]
+			: else : dispiro
+				flat (xCenterRight - 0.5 * HVContrast * fineMid) (top / 2 - O) [widths.center fineMid]
+				curl (xCenterRight - 0.5 * HVContrast * fineMid) [Math.min smb (swMid + rIn)]
+				arcvh 16
+				DiagonalTailF 1 [DivFrame 1] (xCenterRight - 0.5 * HVContrast * Stroke + TanSlope * rIn) 0 rIn 50 flatHookDepth Stroke
+
+	create-glyph 'x.cursive' : glyph-proc
+		include : MarkSet.e
+		include : XCursiveHalfShape XH
+		include : FlipAround Middle (XH / 2)
+		include : XCursiveHalfShape XH
+
+	create-glyph 'x.cursiveCyrlHaDescenderBase' : glyph-proc
+		include : MarkSet.e
+		include : XCursiveHalfShape XH
+		include : FlipAround Middle (XH / 2)
+		include : XCursiveHalfShape XH true
+
+	define [ChiBase fStraight] : union
+		XStrand fStraight false SB Descender RightSB XH 0.05 0.4 0.11
+		XStrand fStraight false SB XH RightSB Descender 0.05 0.4 0.11
+
+	create-glyph 'latn/chi.straightSerifless' : composite-proc [MarkSet.p] [ChiBase true]
+	create-glyph 'latn/chi.curlySerifless' : composite-proc [MarkSet.p] [ChiBase false]
+	create-glyph 'latn/chi.straightSerifed' : composite-proc [MarkSet.p]
+		WithAIHSerifsMask XH Descender SB RightSB : ChiBase true
+		XSerifs XH Descender
+	create-glyph 'latn/chi.curlySerifed' : composite-proc [MarkSet.p]
+		WithAIHSerifsMask XH Descender SB RightSB : ChiBase false
+		XSerifs XH Descender
+	create-glyph 'latn/chi.straightMotionSerifed' : composite-proc [MarkSet.p]
+		ChiBase true
+		XMotionSerifs XH Descender
+	create-glyph 'latn/chi.curlyMotionSerifed' : composite-proc [MarkSet.p]
+		ChiBase false
+		XMotionSerifs XH Descender
+	create-glyph 'latn/chi.straightBilateralMotionSerifed' : composite-proc [MarkSet.p]
+		ChiBase true
+		XMotionSerifsBilateral XH Descender
+	create-glyph 'latn/chi.curlyBilateralMotionSerifed' : composite-proc [MarkSet.p]
+		ChiBase false
+		XMotionSerifsBilateral XH Descender
+	create-glyph 'latn/chi.cursive' : glyph-proc
+		include : MarkSet.p
+		include : XCursiveHalfShape (XH - Descender)
+		include : FlipAround Middle ((XH - Descender) / 2)
+		include : XCursiveHalfShape (XH - Descender)
+		include : ApparentTranslate 0 Descender
+
+
+	select-variant 'X' 'X'
+	link-reduced-variant 'X/sansSerif' 'X' MathSansSerif
+	alias 'grek/Chi' 0x3A7 'X'
+	alias-reduced-variant 'grek/Chi/sansSerif' 'grek/Chi' 'X/sansSerif' MathSansSerif
+	alias 'cyrl/Ha' 0x425 'X'
+
+	select-variant 'x' 'x'
+	link-reduced-variant 'x/sansSerif' 'x' MathSansSerif
+	select-variant 'xCyrlHaDescenderBase' nothing (shapeFrom -- 'x')
+	select-variant 'cyrl/ha' 0x445 (shapeFrom -- 'x')
+
+	select-variant 'grek/chi' 0x3C7 (shapeFrom -- 'latn/chi')
+	select-variant 'latn/chi' 0xAB53 (follow -- 'x')
+
+	derive-composites 'cyrl/HaDescender' 0x4B2 'cyrl/Ha' [CyrDescender RightSB]
+	derive-composites 'cyrl/haDescender' 0x4B3 'xCyrlHaDescenderBase' [CyrDescender RightSB]
+
+	derive-composites 'cyrl/HaHook' 0x4FC 'cyrl/Ha' [CyrHookDescender RightSB]
+	derive-composites 'cyrl/haHook' 0x4FD 'xCyrlHaDescenderBase' [CyrHookDescender RightSB]
+
+	define [CyrlHaBarShape top] : HOverlayBar [mix SB RightSB 0.08] [mix SB RightSB 0.92] (top / 2)
+	derive-composites 'cyrl/HaBar' 0x4FE 'cyrl/Ha' [CyrlHaBarShape CAP]
+	derive-composites 'cyrl/haBar' 0x4FF 'cyrl/ha' [CyrlHaBarShape XH]
+
+	glyph-block-import Letter-Blackboard : BBS BBD
+	define [BBXShape l r top] : let [kDiag : DiagCorDs top (r - l) BBD] : union
+		intersection
+			Rect top 0 (-Width) (Width * 2)
+			union
+				ExtLineCenter 1 BBS l top (r - kDiag * BBD) 0
+				ExtLineCenter 1 BBS (l + kDiag * BBD) top r 0
+		HBarTop    l (l + kDiag * BBD) top BBS
+		HBarBottom r (r - kDiag * BBD) 0 BBS
+		intersection
+			Rect top 0 (-Width) (Width * 2)
+			difference
+				ExtLineCenter 1 BBS l 0 r top
+				spiro-outline
+					corner l top
+					corner (l + kDiag * BBD) top
+					corner r 0
+					corner (r - kDiag * BBD) 0
+
+	create-glyph 'mathbb/X' 0x1D54F : composite-proc [MarkSet.capital] [BBXShape SB RightSB CAP]
+	create-glyph 'mathbb/x' 0x1D569 : composite-proc [MarkSet.e]       [BBXShape SB RightSB XH]

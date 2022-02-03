@@ -1,0 +1,23 @@
+### Punctuation symbols
+$$include '../../../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from '../../../support/utils'
+
+glyph-module
+
+glyph-block Symbol-Punctuation-Interpuncts : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Symbol-Punctuation-Small
+	glyph-block-import Shared-Symbol-Shapes : DotVariants
+
+	foreach { suffix { DrawAt kDotRadius overshoot } } [Object.entries DotVariants] : do
+		create-glyph "interpunct.\(suffix)" : glyph-proc
+			local df : DivFrame para.diversityF
+			set-width df.width
+			include : DrawAt df.middle SymbolMid (PeriodRadius * kDotRadius - overshoot)
+
+	select-variant 'interpunct' 0xB7 (follow -- 'punctuationDot')
+	alias 'period/mid' null 'interpunct'
+	alias 'greekbullet' 0x387 'interpunct'
+	alias 'hyphenpoint' 0x2027 'interpunct'

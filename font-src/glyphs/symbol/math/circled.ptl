@@ -1,0 +1,47 @@
+$$include '../../../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from '../../../support/utils'
+
+glyph-module
+
+glyph-block Symbol-Math-Circled : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+
+	define [MakeMathCircled u inner] : begin
+		derive-glyphs "mathCircled{\(inner)}" u inner : function [src sel]
+			composite-proc
+				refer-glyph 'mathO'
+				intersection [refer-glyph 'mathOOutline'] [refer-glyph src]
+
+	MakeMathCircled 0x2295 'innerPlus'
+	MakeMathCircled 0x2296 'innerMinus'
+	MakeMathCircled 0x2297 'innerMultiply'
+	MakeMathCircled 0x2298 'innerMultiplyStroke1'
+	MakeMathCircled 0x2299 'mathCDotInner'
+	MakeMathCircled 0x229A 'whiteSmallCircle.NWID'
+	MakeMathCircled 0x229B 'mathAsterisk'
+
+	for-width-kinds WideWidth1
+		define [MakeMathBigCircled u inner] : begin
+			derive-glyphs [MangleName "mathBigCircled{\(inner)}"] [MangleUnicode u] [MangleName inner] : function [src sel] : composite-proc
+				refer-glyph : MangleName 'mathOBig'
+				intersection
+					refer-glyph : MangleName 'mathOOutlineBig'
+					refer-glyph src
+
+		MakeMathBigCircled 0x2A00 'mathCDotBig'
+		MakeMathBigCircled 0x2A01 'innerPlusBig'
+		MakeMathBigCircled 0x2A02 'innerMultiplyBig'
+
+	create-glyph 0x229D : composite-proc [refer-glyph 'mathO'] : intersection
+		refer-glyph 'mathOOutline'
+		HBar (SB + GeometryStroke) (RightSB - GeometryStroke) SymbolMid GeometryStroke
+
+	local eqS : Math.min GeometryStroke ((RightSB - SB) / 8)
+	local eqD : Math.max eqS ((RightSB - SB) / 6)
+	create-glyph 0x229C : composite-proc [refer-glyph 'mathO'] : intersection
+		refer-glyph 'mathOOutline'
+		union
+			HBar (SB + eqS) (RightSB - eqS) (SymbolMid + eqD) eqS
+			HBar (SB + eqS) (RightSB - eqS) (SymbolMid - eqD) eqS

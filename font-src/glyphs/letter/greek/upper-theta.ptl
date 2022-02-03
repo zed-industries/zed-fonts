@@ -1,0 +1,24 @@
+$$include '../../../meta/macros.ptl'
+
+import [mix barmixL linreg clamp fallback] from '../../../support/utils'
+import [DesignParameters] from '../../../meta/aesthetics'
+
+glyph-module
+
+glyph-block Letter-Greek-Upper-Theta : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+
+	create-glyph 'grek/Theta' 0x398 : glyph-proc
+		include : MarkSet.capital
+		local xMidLeft  : SB + Stroke * HVContrast - O * 3
+		local xMidRight : RightSB - Stroke * HVContrast + O * 3
+		local yBar : 0.5 * CAP
+		include [refer-glyph 'O'] AS_BASE
+		include : HBar xMidLeft xMidRight yBar
+
+		if SLAB : begin
+			define jutSw : Math.min [AdviceStroke 4] (0.33 * (xMidRight - xMidLeft))
+			define jut : Math.min VJut (Stroke + 2 * jutSw)
+			include : VBarLeft xMidLeft (yBar - 0.5 * jut) (yBar + 0.5 * jut) jutSw
+			include : VBarRight xMidRight (yBar - 0.5 * jut) (yBar + 0.5 * jut) jutSw

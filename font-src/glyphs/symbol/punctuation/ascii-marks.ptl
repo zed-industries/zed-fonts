@@ -1,0 +1,50 @@
+### Punctuation symbols
+$$include '../../../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from '../../../support/utils'
+
+glyph-module
+
+glyph-block Symbol-Punctuation-Ascii-Marks : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Mark-Shared-Metrics : markExtend
+	glyph-block-import Mark-Above : aboveMarkTop
+	glyph-block-import Symbol-Punctuation-Quotes-And-Primes
+
+	define [MarkZoom w] : glyph-proc
+		include : Upright
+		include : Translate (-w / 2) (-XH - AccentStackOffset)
+		include : Scale ((RightSB - SB) / (markExtend * 3))
+		include : Translate (w / 2) (XH + AccentStackOffset)
+		include : Italify
+
+	create-glyph 'asciiTilde.low' : composite-proc
+		refer-glyph 'asciiTilde.high'
+		ApparentTranslate 0 (SymbolMid - XH - AccentStackOffset)
+		MarkSet.plus
+	create-glyph 'asciiCaret.medium' : composite-proc
+		refer-glyph 'asciiCaret.high'
+		ApparentTranslate 0 ((SymbolMid - XH) / 2)
+		MarkSet.plus
+	create-glyph 'asciiCaret.low' : composite-proc
+		refer-glyph 'asciiCaret.high'
+		ApparentTranslate 0 (SymbolMid - XH)
+		MarkSet.plus
+	create-glyph 'caretAtBaseline' 0x2038 : composite-proc
+		refer-glyph 'asciiCaret.high'
+		ApparentTranslate 0 (0 - aboveMarkTop)
+		MarkSet.plus
+
+	select-variant 'asciiTilde' '~'
+	select-variant 'asciiCaret' '^'
+
+	for-width-kinds WideWidth1
+		create-glyph [MangleName 'swungDash'] [MangleUnicode 0x2053] : glyph-proc
+			include [refer-glyph : MangleName 'swungDash.high'] AS_BASE ALSO_METRICS
+			include : ApparentTranslate 0 (SymbolMid - XH - AccentStackOffset)
+
+	create-glyph 'degree' 0xB0 : glyph-proc
+		include [refer-glyph 'markBaseSpace'] AS_BASE ALSO_METRICS
+		include [refer-glyph 'ringAbove']
+		include : MarkZoom currentGlyph.advanceWidth

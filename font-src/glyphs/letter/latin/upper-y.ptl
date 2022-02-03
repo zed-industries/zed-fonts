@@ -1,0 +1,164 @@
+$$include '../../../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from '../../../support/utils'
+import [Dotless CvDecompose MathSansSerif] from "../../../support/gr"
+
+glyph-module
+
+glyph-block Letter-Latin-Upper-Y : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Latin-X : HalfXStrand
+	glyph-block-import Letter-Shared : SetGrekUpperTonos
+	glyph-block-import Letter-Shared-Shapes : SerifFrame WithAIHSerifsMask
+
+	define BODY-CURLY    0
+	define BODY-STRAIGHT 1
+
+	define SLAB-NONE   0
+	define SLAB-ALL    1
+	define SLAB-BASE   2
+	define SLAB-MOTION 3
+
+	define [YCrossPos top bot] : mix bot top 0.4
+
+	define [YSlabs slabType top bot] : glyph-proc
+		local sf : SerifFrame top 0 SB RightSB
+		match slabType
+			[Just SLAB-ALL] : begin
+				include : composite-proc sf.lt.full sf.rt.full
+				include : CenterBottomSerif Middle bot MidJutSide
+			[Just SLAB-MOTION] : include sf.lt.outer
+			[Just SLAB-BASE] : include : CenterBottomSerif Middle bot MidJutSide
+
+	define [YShape bodyType top bot] : glyph-proc
+		local cross : YCrossPos top bot
+		include : tagged 'strokeLT' : WithAIHSerifsMask CAP 0 SB RightSB
+			HalfXStrand bodyType SLAB SB top Middle cross 0.1 0.4 0.28
+		include : tagged 'strokeRT' : WithAIHSerifsMask CAP 0 SB RightSB
+			HalfXStrand bodyType SLAB RightSB top Middle cross 0.1 0.4 0.28
+		include : VBar Middle bot (cross + HalfStroke)
+		set-base-anchor 'overlay' Middle cross
+
+	define [YOverlayShape] : glyph-proc
+		include : HOverlayBar SB RightSB (CAP * 0.45)
+		include : HOverlayBar SB RightSB (CAP * 0.25)
+
+	define [YHookLeftHookedStroke top bot] : begin
+		local cross : YCrossPos top bot
+		return : dispiro
+			widths.lhs
+			straight.right.start (SB - HookX / 3) (top - Stroke)
+			g4 (SB + HookX / 3) (top - Hook) [widths.lhs : AdviceStroke 2.75]
+			quadControls 0.55 0.7 32 unimportant
+			g4 (Middle - Stroke / 2 * HVContrast) cross [widths.lhs : AdviceStroke 3.5]
+
+	define [YHookRightHookedStroke top bot] : begin
+		local cross : YCrossPos top bot
+		return : dispiro
+			widths.rhs
+			straight.left.start (RightSB + HookX / 3) (top - Stroke)
+			g4 (RightSB - HookX / 3) (top - Hook) [widths.rhs : AdviceStroke 2.75]
+			quadControls 0.55 0.7 32 unimportant
+			g4 (Middle + Stroke / 2 * HVContrast) cross [widths.rhs : AdviceStroke 3.5]
+
+	define [YHookTopShape bodyType top bot] : glyph-proc
+		include : YShape bodyType top bot
+		eject-contour 'strokeRT'
+		include : YHookRightHookedStroke top bot
+
+	define [UpsilonHookedSymbolShape top bot] : glyph-proc
+		local cross : YCrossPos top bot
+
+		include : VBar Middle bot (cross + HalfStroke)
+		include : YHookLeftHookedStroke top bot
+		include : YHookRightHookedStroke top bot
+
+	define YConfig : object
+		straightSerifless     { BODY-STRAIGHT SLAB-NONE   }
+		curlySerifless        { BODY-CURLY    SLAB-NONE   }
+		straightBaseSerifed   { BODY-STRAIGHT SLAB-BASE   }
+		curlyBaseSerifed      { BODY-CURLY    SLAB-BASE   }
+		straightMotionSerifed { BODY-STRAIGHT SLAB-MOTION }
+		curlyMotionSerifed    { BODY-CURLY    SLAB-MOTION }
+		straightSerifed       { BODY-STRAIGHT SLAB-ALL    }
+		curlySerifed          { BODY-CURLY    SLAB-ALL    }
+
+	foreach { suffix { bodyType slabType } } [Object.entries YConfig] : do
+		create-glyph "Y.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : YShape bodyType CAP 0
+			include : YSlabs slabType CAP 0
+
+		create-glyph "grek/Upsilon.\(suffix)" : glyph-proc
+			include [refer-glyph "Y.\(suffix)"] AS_BASE ALSO_METRICS
+			include : SetGrekUpperTonos
+				if (slabType === SLAB-NONE || slabType === SLAB-BASE) OX (OX - SideJut)
+
+		create-glyph "smcpY.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : YShape bodyType XH 0
+			include : YSlabs slabType XH 0
+
+		create-glyph "YHookTop.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : YHookTopShape bodyType CAP 0
+			include : YSlabs slabType CAP 0
+			eject-contour 'serifRT'
+
+		create-glyph "cyrl/ue.\(suffix)" : glyph-proc
+			include : MarkSet.p
+			include : YShape bodyType XH Descender
+			include : YSlabs slabType XH Descender
+
+		create-glyph "grek/upsilonHookedSymbolShape.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : UpsilonHookedSymbolShape CAP 0
+			include : YSlabs slabType CAP 0
+			eject-contour 'serifLT'
+			eject-contour 'serifRT'
+			include : SetGrekUpperTonos (OX - HookX / 3)
+
+	select-variant 'Y' 'Y'
+	link-reduced-variant 'Y/sansSerif' 'Y' MathSansSerif
+	select-variant 'YHookTop' 0x1B3 (follow -- 'Y')
+	select-variant 'smcpY' 0x28F (follow -- 'Y')
+	select-variant 'cyrl/ue' 0x4AF (follow -- 'Y')
+	select-variant 'grek/upsilonHookedSymbolShape' 0x3D2
+	turned 'turnSansSerifY' 0x2144 'Y/sansSerif' Middle (CAP / 2)
+
+	select-variant 'grek/Upsilon' 0x3A5 (follow -- 'Y')
+	link-reduced-variant 'grek/Upsilon/sansSerif' 'grek/Upsilon' MathSansSerif (follow -- 'Y/sansSerif')
+	alias 'cyrl/Ue' 0x4AE 'Y'
+	derive-glyphs 'currency/yenSign' 0xA5 'Y' : lambda [src sel] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		include : YOverlayShape
+
+	create-glyph 'YStrokeOverlay' : HOverlayBar ([mix 0 SB 0.5]) ([mix Width RightSB 0.5]) [mix 0 CAP 0.75]
+	derive-composites 'YStroke' 0x24E 'Y' 'YStrokeOverlay'
+
+	# Blackboard
+	glyph-block-import Letter-Blackboard : BBS BBD
+	create-glyph 'mathbb/Y' 0x1D550 : glyph-proc
+		local yCross : CAP * 0.4
+
+		include : MarkSet.capital
+		include : HBarTop SB (SB + BBD) CAP BBS
+		include : intersection
+			Rect CAP 0 (-Width) (2 * Width)
+			union
+				difference
+					ExtLineCenter 1 BBS  SB         CAP (Middle - BBD / 2) yCross
+					Rect CAP 0 (Middle - BBD / 2 + BBS / 2 * HVContrast) (Width * 2)
+				difference
+					ExtLineCenter 1 BBS  (SB + BBD) CAP (Middle + BBD / 2) yCross
+					Rect CAP 0 (Middle + BBD / 2 + BBS / 2 * HVContrast) (Width * 2)
+
+		include : intersection
+			Rect CAP yCross (-Width) (2 * Width)
+			ExtLineCenter 1 BBS  RightSB CAP (Middle + BBD / 2) yCross
+
+		include : HBarBottom (Middle - BBD / 2) (Middle + BBD / 2) 0 BBS
+		include : union
+			VBar (Middle - BBD / 2) 0 yCross BBS
+			VBar (Middle + BBD / 2) 0 yCross BBS

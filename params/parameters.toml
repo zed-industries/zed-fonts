@@ -1,0 +1,140 @@
+### Editing this file for font customization is strongly discouraged.
+### Use `private-build-plans.toml` to create custom fonts.
+### Changing the numbers may make the builder crash / hang / produce broken shapes.
+
+[iosevka]
+naming.copyright = 'Copyright 2015-2021, Renzhi Li (aka. Belleve Invis, belleve@typeof.net).'
+naming.licence = '''This font software is licenced under the SIL Open Font Licence, Version 1.1. This licence is available with a FAQ at: http://scripts.sil.org/OFL. This font software is distributed on an 'AS IS' basis, without warranties or conditions of any kind, either express or implied. See the SIL Open Font licence for the specific language, permissions and limitations governing your use of this font software.'''
+naming.manufacturer = 'Belleve Invis'
+naming.designer = 'Belleve Invis'
+naming.description = 'Spatial efficient monospace font family for programming. Built from code. http://be5invis.github.io/Iosevka'
+
+leading = 1250     # Default line height times 1000.
+descenderPad = 0   # Additional line height, added to descender.
+cap = 735          # Cap height (as well as ascender).
+xheight = 520      # X-height.
+#descender = -205  # Depth of descender. Currently unused.
+winMetricAscenderPad  = 0 # Padding of Win ascnder metrics to avoid clipping. See #343
+winMetricDescenderPad = 0 # Padding of Win descender metrics to avoid clipping. See #343
+
+symbolMid = 340    # Center of parens, maths, geometrics...
+parenSize = 966    # Size of parens, brackets, braces, slashes, etc.
+operSize = 0.80    # Size of mathematical operators (cups, etc.)
+tackSize = 0.80    # Size of logical operators (tacks, etc.)
+bgopSize = 1.10    # Size of "taller" mathematical operators
+plusSize = 0.52    # Size of plus and arith symbols
+pictSize = 1.10    # Size of pictograms
+arrowHeight = 1.50 # Height of arrows
+
+slopeAngle = 0     # slope angle, in degrees.
+derivedSlopeAngle = 10 # Slope angle of derived letters requiring italics
+
+accentWidth = 200       # Width of accent marks.
+accentClearance = 80    # Vertical clearance of accent marks to the base.
+accentHeight = 140      # Height of accent marks.
+accentStackOffset = 205 # Offset height of accent mark stack.
+overshoot = -8          # Vertical overshoot for arcs.
+overshootx = -8         # Horizontal overshoot for arcs.
+oxhook = -2             # Horizontal overshoot for hook tips.
+
+refJut = 85
+
+shoulderFineMin = 0.8
+
+isItalic = false   # Use italic shapes?
+isOblique = false  # Use oblique shapes?
+
+spacing = 1         # Spacing indicator
+unitWidthScalar = 1 # Scalar of unit width, used in derived builds
+
+# Powerline-specific parameters
+powerlineScaleY = 1 # Vertical scale
+powerlineScaleX = 1 # Horizontal scale
+powerlineShiftY = 0 # Vertical shift
+powerlineShiftX = 0 # Horizontal shift
+
+# Whether to generate CV-SS features
+enableCvSs = true
+
+# Whether to generate ligation
+enableLigation = true
+
+# Excluded code points
+excludedCharRanges = []
+
+# Slab level -- Set to 0 by default
+#  - 0  : Sans
+#  - 1  : TODO
+#  - 2+ : Full     (3.x)
+slab = 0
+
+# Old style number height
+onumZeroHeightRatio = 1.145
+
+# Reset diversity
+diversityM  = 1
+diversityF  = 1
+diversityI  = 1
+diversityII = 1
+
+# OS/2 and POST fixed metrics
+
+"os2.yStrikeoutPosition"   = 265
+"os2.yStrikeoutSize"       = 51
+"os2.ySubscriptXOffset"    = 0
+"os2.ySubscriptXSize"      = 665
+"os2.ySubscriptYOffset"    = 143
+"os2.ySubscriptYSize"      = 716
+"os2.ySuperscriptXOffset"  = 0
+"os2.ySuperscriptXSize"    = 665
+"os2.ySuperscriptYOffset"  = 491
+"os2.ySuperscriptYSize"    = 716
+"post.underlinePosition"   = -50
+"post.underlineThickness"  = 50
+
+[verbose]
+verbose = true
+
+###### Slab variant
+[serifs-slab]
+slab = 2
+
+###### Spacings
+# Terminal variant
+[spacing-term]
+spacing = 0
+
+# "FontFonfig Monospace"
+[spacing-fontconfig-mono]
+spacing = 0
+forceMonospace = true
+
+# Fixed variant
+[spacing-fixed]
+spacing = 0
+enableLigation = false
+forceMonospace = true
+
+# Quasi-proportional
+[spacing-quasi-proportional]
+spacing = 3
+isQuasiProportional = true
+diversityM  = 1.25
+diversityF  = 0.75
+diversityI  = 0.75
+diversityII = 0.50
+
+[spacing-quasi-proportional-extension-only]
+spacing = 3
+isQuasiProportional = true
+diversityM  = 1.25
+diversityF  = 1.00
+diversityI  = 1.00
+diversityII = 1.00
+
+###### Slopes
+[slope-italic]
+isItalic = true
+
+[slope-oblique]
+isOblique = true

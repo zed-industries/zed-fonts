@@ -1,0 +1,112 @@
+$$include '../../../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from '../../../support/utils'
+import [Dotless CvDecompose MathSansSerif] from "../../../support/gr"
+
+glyph-module
+
+glyph-block Letter-Latin-Upper-D : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+
+	define [DArcShapeT sink df top right offset sw fRound] : glyph-proc
+		local mockWidth : right + (df.width - df.rightSB)
+		local maxXSmoothWidth : mockWidth - df.leftSB * 2 - sw * HVContrast
+		local dsmooth : clamp (sw * 1.5) (top * 0.499) ((top / CAP) * Smooth * 1.1)
+		local bsmooth : clamp (sw * 1.5) maxXSmoothWidth ((mockWidth / Width) * Smooth * 1.1)
+		local bsmoothRd : clamp (sw * 1.5) maxXSmoothWidth ((mockWidth / Width) * Smooth * 1.25)
+
+		local sma : SmoothAOf dsmooth mockWidth
+		local smb : SmoothBOf dsmooth mockWidth
+
+		if (fRound) : include : sink
+			widths.rhs sw
+			[if offset corner flat] (df.leftSB - O) (top - offset) [heading Rightward]
+			curl (right - bsmoothRd - CorrectionOMidS) (top - offset)
+			archv
+			g4 (right - OX - offset) [YSmoothMidR top 0 sma smb]
+			arcvh
+			flat (right - bsmoothRd + CorrectionOMidS) offset
+			[if offset corner curl] (df.leftSB - O) offset [heading Leftward]
+		: else : include : sink
+			widths.rhs sw
+			[if offset corner flat] (df.leftSB - O) (top - offset) [heading Rightward]
+			curl (right - bsmooth - CorrectionOMidS) (top - offset)
+			archv
+			flat (right - OX - offset) (top - smb)
+			curl (right - OX - offset) (0 + sma)
+			arcvh
+			flat (right - bsmooth + CorrectionOMidS) offset
+			[if offset corner curl] (df.leftSB - O) offset [heading Leftward]
+
+	define [DShape df top right fRound slabTop slabBot] : glyph-proc
+		include : VBarLeft df.leftSB 0 top df.mvs
+		include : DArcShapeT dispiro df top right 0 df.mvs fRound
+		if slabTop : include : tagged 'serifLT' : LeftwardTopSerif df.leftSB top SideJut
+		if slabBot : include : tagged 'serifLB' : LeftwardBottomSerif df.leftSB 0 SideJut
+
+	define DConfig : object
+		standardSerifless            { false false false }
+		moreRoundedSerifless         { true false false  }
+		standardUnilateralSerifed    { false true false  }
+		moreRoundedUnilateralSerifed { true true false   }
+		standardBilateralSerifed     { false true true   }
+		moreRoundedBilateralSerifed  { true true true    }
+
+	foreach { suffix { fRound fSlabTop fSlabBot } } [Object.entries DConfig] : do
+		create-glyph "D.\(suffix)" : glyph-proc
+			include : MarkSet.capital
+			include : DShape [DivFrame 1] CAP RightSB fRound fSlabTop fSlabBot
+		create-glyph "smcpD.\(suffix)" : glyph-proc
+			include : MarkSet.e
+			include : DShape [DivFrame 1] XH RightSB fRound fSlabTop fSlabBot
+		create-glyph "romanFiveThousand.\(suffix)" : glyph-proc
+			local df : DivFrame 1 3
+			include : MarkSet.capital
+			include : DShape df CAP df.rightSB fRound fSlabTop fSlabBot
+			include : WithTransform [ApparentTranslate 0 (CAP * 0.2)]
+				DShape df (CAP * 0.6) (df.middle + HVContrast * df.mvs * 0.5) fRound
+		create-glyph "romanFiftyThousand.\(suffix)" : glyph-proc
+			local df : DivFrame 1 4
+			local innerDist : df.rightSB - df.leftSB - 4 * df.mvs * HVContrast
+			local arcX1 : df.leftSB + innerDist * (1 / 3) + 2 * df.mvs * HVContrast
+			local arcX2 : df.leftSB + innerDist * (2 / 3) + 3 * df.mvs * HVContrast
+			local heightGap : df.mvs + (CAP - df.mvs * 6) / 6
+			include : MarkSet.capital
+			include : DShape df CAP df.rightSB fRound fSlabTop fSlabBot
+			include : WithTransform [ApparentTranslate 0 heightGap]
+				DShape df (CAP - 2 * heightGap) arcX2 fRound
+			include : WithTransform [ApparentTranslate 0 (2 * heightGap)]
+				DShape df (CAP - 4 * heightGap) arcX1 fRound
+
+	select-variant 'D' 'D'
+	select-variant 'romanFiveThousand' 0x2181 (follow -- 'D')
+	select-variant 'romanFiftyThousand' 0x2187 (follow -- 'D')
+	link-reduced-variant 'D/sansSerif' 'D' MathSansSerif
+	derive-glyphs 'Eth' 0xD0 'D' : lambda [src sel] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		include : HOverlayBar (SB * 0.3) [mix (SB + Stroke) (RightSB - Stroke) 0.55] (CAP * OverlayPos)
+	alias 'Dcroat' 0x110 'Eth'
+	alias 'arficanD' 0x189 'Eth'
+
+	select-variant 'smcpD' 0x1D05 (follow -- 'D')
+	derive-glyphs 'smcpEth' 0x1D06 'smcpD' : lambda [src sel] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		include : HOverlayBar (SB * 0.3) [mix (SB + Stroke) (RightSB - Stroke) 0.55] (XH * OverlayPos)
+
+	derive-glyphs 'Dhookleft' 0x18a 'D' : lambda [src sel] : glyph-proc
+		include [refer-glyph src] AS_BASE ALSO_METRICS
+		eject-contour 'serifLT'
+		include : LeftHook SB CAP
+
+	glyph-block-import Letter-Blackboard : BBS BBD
+	create-glyph 'mathbb/D' 0x1D53B : glyph-proc
+		define df : DivFrame 1
+		include : df.markSet.capital
+		include : VBarLeft df.leftSB 0 CAP BBS
+		include : DArcShapeT dispiro df CAP df.rightSB 0 BBS false
+		include : intersection
+			DArcShapeT spiro-outline df CAP df.rightSB 1 BBS false
+			union
+				VBarLeft (df.leftSB + BBD) 0 CAP BBS
+				VBarRight (df.rightSB - BBD - OX) 0 CAP BBS

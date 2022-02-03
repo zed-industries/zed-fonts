@@ -1,0 +1,177 @@
+$$include '../../../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from '../../../support/utils'
+import [Dotless CvDecompose MathSansSerif] from "../../../support/gr"
+
+glyph-module
+
+glyph-block Letter-Latin-Lower-F : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Letter-Shared-Shapes : FlatHookDepth DiagonalTailL DiagonalTailStdDepth
+
+	define fbar : XH * DesignParameters.fBarPosToXH + Stroke * DesignParameters.fbarStrokeAdj
+	define [SmallFBottomSerif df shift] : dispiro
+		widths.lhs
+		flat ([mix df.leftSB df.rightSB 0.02] + HalfStroke * TanSlope + (df.rightSB - df.leftSB) * shift) 0
+		curl ([mix df.leftSB df.rightSB 0.875] + HalfStroke * TanSlope + (df.rightSB - df.leftSB) * shift) 0
+
+	define [StdFShapeT sink offset barleft sw] : sink
+		widths.lhs sw
+		g4 (RightSB + RBalance2 - (OX - O) - offset) (CAP - Hook * 0.75)
+		hookstart (CAP - O - offset) (tight -- true)
+		flat (barleft + offset) (CAP - SmoothA * 0.8)
+		[if offset corner curl] (barleft + offset) 0 [heading Downward]
+		if offset {[corner (RightSB + RBalance2 - (OX - O) - offset) 0]} {}
+
+	define [SmallFDownExtension barLeft] : VBarLeft barLeft 0.1 (Descender * 0.9)
+
+	define [SmallFDownHook df barRight counterHookLeft] : begin
+		local hd : FlatHookDepth df
+		return : dispiro
+			widths.lhs
+			flat counterHookLeft Descender
+			curl [Math.max (barRight - hd.x) (counterHookLeft + 0.1)] Descender
+			archv.superness DesignParameters.tightHookSuperness
+			flat barRight [Math.min 0 (Descender + hd.y)]
+			curl barRight 0.1 [heading Upward]
+
+	define [SmallFDiagonalTail df barLeft] : begin
+		local xBarMiddle : barLeft + HalfStroke * HVContrast
+		return : dispiro
+			flat xBarMiddle 0.1 [widths.center.heading Stroke Downward]
+			DiagonalTailL df xBarMiddle Descender [DiagonalTailStdDepth df Stroke] Stroke
+
+	glyph-block-export StdSmallFBarLeftPos
+	define [StdSmallFBarLeftPos barAtCenter] : [mix SB RightSB : if barAtCenter 0.45 0.35] - Stroke * [if barAtCenter 0.45 0.25] * HVContrast
+
+	glyph-block-export StdSmallFBarLeftPos0
+	define [StdSmallFBarLeftPos0] : [mix SB RightSB 0.35] - Stroke * 0.25 * HVContrast
+
+	define [StandardSmallFShape df m bh counterHook] : glyph-proc
+		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK)
+		local barLeft0 : StdSmallFBarLeftPos0
+		local barLeft : StdSmallFBarLeftPos barAtCenter
+
+		include : StdFShapeT dispiro 0 barLeft0 Stroke
+		include : Translate (barLeft - barLeft0) 0
+		include : HCrossBar.top SB [mix SB RightSB m] bh
+
+		match counterHook
+			[Just CH-EXTENSION] : include : SmallFDownExtension barLeft
+			[Just CH-HOOK] : begin
+				local barRight : barLeft + Stroke * HVContrast
+				local crossRight : mix df.width df.rightSB m
+				local counterHookLeft : Math.max SB : barRight - (crossRight - barLeft)
+				include : SmallFDownHook df barRight counterHookLeft
+			[Just CH-DIAGONAL-HOOK] : include : SmallFDiagonalTail df barLeft
+			[Just CH-SERIF] : include : SmallFBottomSerif df 0
+
+	define [NarrowFShape clcStyle] : function [df m bh counterHook] : glyph-proc
+		local topHookExt : match clcStyle
+			[Just 1] Width
+			[Just 2] Jut
+			__       0
+		local topHookHdExt : match clcStyle
+			[Just 1] 1
+			__       0
+		local crossBarExt : if (clcStyle === 1) Jut 0
+
+		local barAtCenter : (counterHook === CH-HOOK) || (counterHook === CH-DIAGONAL-HOOK)
+		local crossLeft : mix 0 df.leftSB m
+		local crossRight : mix df.width df.rightSB m
+		local barLeft : if barAtCenter
+			df.middle - HalfStroke * HVContrast
+			[mix crossLeft crossRight 0.42] - Stroke * 0.375 * HVContrast
+		local hd : FlatHookDepth df
+		include : dispiro
+			widths.lhs
+			flat (crossRight + topHookExt) CAP
+			curl [Math.min (barLeft + hd.x * (1 + topHookHdExt)) (crossRight - 0.1)] CAP
+			archv.superness DesignParameters.tightHookSuperness
+			flat barLeft [Math.max XH (CAP - hd.y)]
+			curl barLeft 0 [heading Downward]
+		include : HCrossBar.top crossLeft (crossRight + crossBarExt) bh
+
+		match counterHook
+			[Just CH-EXTENSION] : include : SmallFDownExtension barLeft
+			[Just CH-HOOK] : begin
+				local barRight : barLeft + Stroke * HVContrast
+				local crossRight : mix df.width df.rightSB m
+				local counterHookLeft : barRight - (crossRight - barLeft)
+				include : SmallFDownHook df barRight counterHookLeft
+			[Just CH-DIAGONAL-HOOK] : include : SmallFDiagonalTail df barLeft
+			[Just CH-SERIF] : include : CenterBottomSerif df.middle 0 (LongJut * df.div)
+
+	define CH-NONE           0
+	define CH-SERIF          1
+	define CH-EXTENSION      2
+	define CH-HOOK           3
+	define CH-DIAGONAL-HOOK  4
+
+	define dfNarrowF : DivFrame para.diversityF
+	define pNarrowSide : mix 1 para.diversityF 1.5
+
+	define SmallFConfig : object
+		'serifless'                               { { StandardSmallFShape [DivFrame 1] } { 0.95        fbar CH-NONE          } { 'b'  'p'  } }
+		'serifed'                                 { { StandardSmallFShape [DivFrame 1] } { 0.95        fbar CH-SERIF         } { 'b'  'p'  } }
+		'extended'                                { { StandardSmallFShape [DivFrame 1] } { 0.95        fbar CH-EXTENSION     } { 'if' 'if' } }
+		'tailed'                                  { { StandardSmallFShape [DivFrame 1] } { 1           fbar CH-HOOK          } { 'if' 'if' } }
+		'diagonalTailed'                          { { StandardSmallFShape [DivFrame 1] } { 1           fbar CH-DIAGONAL-HOOK } { 'if' 'if' } }
+		'seriflessCrossbarAtXHeight'              { { StandardSmallFShape [DivFrame 1] } { 0.95        XH   CH-NONE          } { 'b'  'p'  } }
+		'serifedCrossbarAtXHeight'                { { StandardSmallFShape [DivFrame 1] } { 0.95        XH   CH-SERIF         } { 'b'  'p'  } }
+		'extendedCrossbarAtXHeight'               { { StandardSmallFShape [DivFrame 1] } { 0.95        XH   CH-EXTENSION     } { 'if' 'if' } }
+		'tailedCrossbarAtXHeight'                 { { StandardSmallFShape [DivFrame 1] } { 1           XH   CH-HOOK          } { 'if' 'if' } }
+		'diagonalTailedCrossbarAtXHeight'         { { StandardSmallFShape [DivFrame 1] } { 1           XH   CH-DIAGONAL-HOOK } { 'if' 'if' } }
+		'flatHook'                                { { [NarrowFShape 0]     dfNarrowF   } { pNarrowSide fbar CH-NONE          } { 'b'  'p'  } }
+		'flatHookSerifed'                         { { [NarrowFShape 0]     dfNarrowF   } { pNarrowSide fbar CH-SERIF         } { 'b'  'p'  } }
+		'flatHookExtended'                        { { [NarrowFShape 0]     dfNarrowF   } { pNarrowSide fbar CH-EXTENSION     } { 'if' 'if' } }
+		'flatHookTailed'                          { { [NarrowFShape 0]     dfNarrowF   } { pNarrowSide fbar CH-HOOK          } { 'if' 'if' } }
+		'flatHookDiagonalTailed'                  { { [NarrowFShape 0]     dfNarrowF   } { pNarrowSide fbar CH-DIAGONAL-HOOK } { 'if' 'if' } }
+		'flatHookCrossbarAtXHeight'               { { [NarrowFShape 0]     dfNarrowF   } { pNarrowSide XH   CH-NONE          } { 'b'  'p'  } }
+		'flatHookSerifedCrossbarAtXHeight'        { { [NarrowFShape 0]     dfNarrowF   } { pNarrowSide XH   CH-SERIF         } { 'b'  'p'  } }
+		'flatHookExtendedCrossbarAtXHeight'       { { [NarrowFShape 0]     dfNarrowF   } { pNarrowSide XH   CH-EXTENSION     } { 'if' 'if' } }
+		'flatHookTailedCrossbarAtXHeight'         { { [NarrowFShape 0]     dfNarrowF   } { pNarrowSide XH   CH-HOOK          } { 'if' 'if' } }
+		'flatHookDiagonalTailedCrossbarAtXHeight' { { [NarrowFShape 0]     dfNarrowF   } { pNarrowSide XH   CH-DIAGONAL-HOOK } { 'if' 'if' } }
+
+		'flatHookCLC1'                            { { [NarrowFShape 1]     dfNarrowF   } { pNarrowSide XH   CH-NONE          } { 'b'  'p'  } }
+		'flatHookSerifedCLC1'                     { { [NarrowFShape 1]     dfNarrowF   } { pNarrowSide XH   CH-SERIF         } { 'b'  'p'  } }
+		'flatHookExtendedCLC1'                    { { [NarrowFShape 1]     dfNarrowF   } { pNarrowSide XH   CH-EXTENSION     } { 'if' 'if' } }
+		'flatHookTailedCLC1'                      { { [NarrowFShape 1]     dfNarrowF   } { pNarrowSide XH   CH-HOOK          } { 'if' 'if' } }
+		'flatHookDiagonalTailedCLC1'              { { [NarrowFShape 1]     dfNarrowF   } { pNarrowSide XH   CH-DIAGONAL-HOOK } { 'if' 'if' } }
+
+		'flatHookCLC2'                            { { [NarrowFShape 2]     dfNarrowF   } { pNarrowSide fbar CH-NONE          } { 'b'  'p'  } }
+		'flatHookSerifedCLC2'                     { { [NarrowFShape 2]     dfNarrowF   } { pNarrowSide fbar CH-SERIF         } { 'b'  'p'  } }
+		'flatHookExtendedCLC2'                    { { [NarrowFShape 2]     dfNarrowF   } { pNarrowSide fbar CH-EXTENSION     } { 'if' 'if' } }
+		'flatHookTailedCLC2'                      { { [NarrowFShape 2]     dfNarrowF   } { pNarrowSide fbar CH-HOOK          } { 'if' 'if' } }
+		'flatHookDiagonalTailedCLC2'              { { [NarrowFShape 2]     dfNarrowF   } { pNarrowSide fbar CH-DIAGONAL-HOOK } { 'if' 'if' } }
+
+	foreach { suffix {{Body df} {pBar yBar ch} {mk mkTurn}}} [Object.entries SmallFConfig] : do
+		create-glyph "f.\(suffix)" : glyph-proc
+			set-width df.width
+			include : df.markSet.(mk)
+			include : Body df pBar yBar ch
+		turned "turnf.\(suffix)" nothing "f.\(suffix)" df.middle (XH / 2) [df.markSet.(mkTurn)]
+
+	select-variant 'f' 'f'
+	link-reduced-variant 'f/sansSerif' 'f' MathSansSerif
+	select-variant 'turnf' 0x25F (follow -- 'f')
+	select-variant 'fLenis' 0xAB35 (shapeFrom -- 'f')
+	select-variant 'fLTail' 0x192  (shapeFrom -- 'f')
+	select-variant 'dotlessjWithStrokeAndHook' 0x284  (shapeFrom -- 'turnf')
+	select-variant 'f/compLigLeft1' (shapeFrom -- 'f')
+	select-variant 'f/compLigLeft2' (shapeFrom -- 'f')
+	select-variant 'f/phoneticLeft' (shapeFrom -- 'f')
+
+	glyph-block-import Letter-Blackboard : BBS BBD
+	create-glyph 'mathbb/f' 0x1D557 : glyph-proc
+		include : MarkSet.b
+		local barLeft : [mix SB RightSB 0.35] - BBD * 0.25 * HVContrast
+		include : StdFShapeT dispiro 0 barLeft BBS
+		include : intersection
+			VBarLeft (barLeft + BBD) 0 CAP BBS
+			StdFShapeT spiro-outline 1 barLeft BBS
+		include : difference
+			HCrossBar.top SB [mix SB RightSB 0.95] fbar BBS
+			Rect CAP 0 barLeft (barLeft + BBD)
+		include : HBarBottom barLeft (barLeft + BBD) 0 BBS

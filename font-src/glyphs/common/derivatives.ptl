@@ -1,0 +1,239 @@
+$$include '../../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from '../../support/utils'
+import [Cv AnyCv AnyDerivingCv Dotless SvInheritableRelations CvDecompose] from '../../support/gr'
+
+extern Map
+
+glyph-module
+
+glyph-block Common-Derivatives : begin
+	glyph-block-import CommonShapes : FlipAround
+	define [ApplyCv g shapeFrom follow para] : begin
+		foreach { kPrime prime } para.variants.primes : foreach h [prime.variants.values] : begin
+			local suffix : h.resolveFor para follow
+			if suffix : begin
+				local dstName : shapeFrom + '.' + suffix
+				local dst : glyphStore.queryByName dstName
+				if dst : g.dependsOn dst
+				if (h.tag && h.rank) : begin
+					[Cv h.tag h.rank].set g dstName
+					if h.nonDeriving : [Cv h.tag h.rank].setPreventDeriving g
+
+	define [select-variant] : params [name unicode [shapeFrom name] [follow name]] : begin
+		if [not : glyph-is-needed name] : return nothing
+
+		local variant para.variantSelector.(follow)
+		if [not variant] : throw : new Error "Variant for \(name) is not assigned."
+
+		create-glyph name unicode : glyph-proc
+			include [refer-glyph (shapeFrom + '.' + variant)] AS_BASE ALSO_METRICS
+			ApplyCv currentGlyph shapeFrom follow para
+			currentGlyph.cloneRankFromGlyph [query-glyph (shapeFrom + '.' + variant)]
+			foreach gr [items-of SvInheritableRelations] : begin
+				local v : gr.get [query-glyph (shapeFrom + '.' + variant)]
+				if v : gr.set this v
+
+	define [orthographic-italic name unicode] : if para.isItalic
+		alias name unicode (name + '.italic')
+		alias name unicode (name + '.upright')
+
+	define [orthographic-slanted name unicode] : if para.slopeAngle
+		alias name unicode (name + '.slanted')
+		alias name unicode (name + '.upright')
+
+	define [glyph-is-needed name] : [not pickHash] || pickHash.(name)
+
+	define [query-glyph id] : return : glyphStore.queryByName id
+
+	define [refer-glyph id] : lambda [copyAnchors copyWidth] : begin
+		local goal : query-glyph id
+		if [not goal] : throw : new Error "Cannot find glyph '\(id)'"
+		this.includeGlyph goal copyAnchors copyWidth
+
+	define [derive-glyphs dstGid dstUnicode srcGid Fn] : begin
+		if [not : glyph-is-needed srcGid] : return nothing
+
+		local glyphSrc : glyphStore.queryByName srcGid
+		local glyphDst : create-glyph dstGid dstUnicode : glyph-proc
+			include : Fn srcGid null
+
+		local derivedGlyphIdMap : new Map
+		if glyphDst : foreach [gr : items-of : AnyDerivingCv.query glyphSrc] : begin
+			local relGidSrc : gr.get glyphSrc
+			if [derivedGlyphIdMap.get relGidSrc]
+			: then : gr.set glyphDst : derivedGlyphIdMap.get relGidSrc
+			: else : begin
+				local relGidDst : gr.amendName dstGid
+				create-glyph relGidDst : glyph-proc : include : Fn [gr.get glyphSrc] gr.tag
+				gr.set glyphDst relGidDst
+				derivedGlyphIdMap.set relGidSrc relGidDst
+
+	define [derive-composites dstGid dstUnicode srcGid] : begin
+		if [not : glyph-is-needed srcGid] : return nothing
+
+		local restComponents : {}.slice.call arguments 3
+		return : derive-glyphs dstGid dstUnicode srcGid : lambda [src sel] : glyph-proc
+			include [refer-glyph src] AS_BASE ALSO_METRICS
+			foreach component [items-of restComponents] : begin
+				if ([typeof component] === 'string')
+				: then : include [refer-glyph component]
+				: else : include component
+
+	define [alias dstGid dstUnicode srcGid] : begin
+		if [not dstGid] : throw : new Error "Target ID not specified"
+		if [not : glyph-is-needed srcGid] : return nothing
+
+		local glyphSrc : glyphStore.queryByNameEnsured srcGid
+		local glyphDst : create-glyph dstGid dstUnicode : glyph-proc
+			include [refer-glyph srcGid] AS_BASE ALSO_METRICS
+
+		if glyphDst : begin
+			foreach [gr : items-of : AnyCv.query glyphSrc] : begin
+				gr.set glyphDst [gr.get glyphSrc]
+				if [gr.getPreventDeriving glyphSrc] : gr.setPreventDeriving glyphDst
+			if [Dotless.get glyphSrc] : Dotless.set glyphDst [Dotless.get glyphSrc]
+
+	define [turned newid unicode id _x _y mark] : begin
+		if [not newid] : throw : new Error "Target ID not specified"
+		derive-glyphs newid unicode id
+			lambda [src sel] : glyph-proc
+				include [refer-glyph src] [if mark false AS_BASE] ALSO_METRICS
+				if mark : include mark
+				define x : if (_x <@ Function) [_x.call currentGlyph] _x
+				define y : if (_y <@ Function) [_y.call currentGlyph] _y
+				include : FlipAround x y
+
+	define [link-reduced-variant] : params [dstGid srcGid gr follow] : begin
+		if [not : query-glyph dstGid] : select-variant dstGid (shapeFrom -- srcGid) (follow -- [fallback follow dstGid])
+		if (gr && [query-glyph srcGid]) : gr.set [query-glyph srcGid] dstGid
+
+	define [alias-reduced-variant dstGid srcGid shapeGid gr] : begin
+		alias dstGid null shapeGid
+		if (gr && [query-glyph srcGid]) : gr.set [query-glyph srcGid] dstGid
+
+	define [HalfAdvance] : this.advanceWidth / 2
+
+	define [TurnMarks k fnOverride] : glyph-proc
+		local df : DivFrame (currentGlyph.advanceWidth / Width)
+		local mx : compositeBaseAnchors [df.markSet.(k)]
+			if fnOverride [fnOverride df] {.baseAnchors {.}}
+		include mx
+
+	# Dual derivatives
+	define [HCombine newid unicode id1 id2 spacing] : begin
+		if [not newid] : throw : new Error "Target ID not specified"
+		create-glyph newid unicode : glyph-proc
+			include [refer-glyph id1] AS_BASE ALSO_METRICS
+			include : Translate (-spacing) 0
+			include [refer-glyph id2]
+			include : Translate (spacing / 2) 0
+
+	define [HDual newid unicode id spacing] : begin
+		if [not newid] : throw : new Error "Target ID not specified"
+		return : HCombine newid unicode id id spacing
+
+	define [VCombine newid unicode id1 id2 spacing] : begin
+		if [not newid] : throw : new Error "Target ID not specified"
+		create-glyph newid unicode : glyph-proc
+			include [refer-glyph id2] AS_BASE ALSO_METRICS
+			include : Translate (-spacing * TanSlope) (-spacing)
+			include [refer-glyph id1]
+			include : Translate (spacing * TanSlope / 2) (spacing / 2)
+	define [VDual newid unicode id spacing] : begin
+		if [not newid] : throw : new Error "Target ID not specified"
+		return : VCombine newid unicode id id spacing
+
+	# Two-art glyphs
+	define [create-two-part-glyph newid unicode id1 id2] : begin
+		create-glyph newid unicode : glyph-proc
+			include [refer-glyph id1] AS_BASE ALSO_METRICS
+			include [refer-glyph id2]
+			CvDecompose.set currentGlyph { id1 id2 }
+
+
+	glyph-block-export select-variant orthographic-italic orthographic-slanted
+	glyph-block-export refer-glyph query-glyph derive-glyphs derive-composites
+	glyph-block-export link-reduced-variant alias-reduced-variant
+	glyph-block-export alias turned HDual HCombine VDual VCombine glyph-is-needed
+	glyph-block-export HalfAdvance TurnMarks create-two-part-glyph
+
+glyph-block Recursive-Build : begin
+	define [Fork gs ps] : begin
+		# BFS construct ShouldBuildList
+		local sbh : new Map
+		local PENDING 1
+		local CHECKED 2
+		foreach [glyphid : items-of gs] : sbh.set glyphid PENDING
+
+		local found true
+		while found : begin
+			set found false
+			foreach glyphid [sbh.keys] : if ([sbh.get glyphid] === PENDING) : begin
+				sbh.set glyphid CHECKED
+				local g : glyphStore.queryByName glyphid
+				if (g && g.dependencies) : foreach [k : items-of g.dependencies] : begin
+					if [not : sbh.has k] : begin
+						sbh.set k PENDING
+						set found true
+
+		local shouldBuildList     { }
+		local shouldBuildUnicodes { }
+		foreach gn [sbh.keys] : if gn : begin
+			shouldBuildList.push gn
+			if [glyphStore.queryUnicodeOfName gn] : begin
+				shouldBuildUnicodes.push [glyphStore.queryUnicodeArrayOfName gn].0
+
+		local p {.}
+		foreach {k v} [pairs-of all ps] : set p.(k) v
+
+		local gs : buildGlyphs p shouldBuildList shouldBuildUnicodes
+		return gs.glyphStore
+
+	define [MiniatureParaT] : params [pp crowd scale [sbscale (Width / UPM)] [mono false] [mono2 false] [forceUpright false]] : begin
+		local forkedPara : Object.assign {.} pp
+		forkedPara.stroke = [AdviceStroke crowd : Math.pow [clamp 0 1 (HalfUPM / Width)] 0.5] / scale
+		forkedPara.dotSize = pp.dotSize * forkedPara.stroke / pp.stroke
+		forkedPara.periodSize = pp.periodSize * forkedPara.stroke / pp.stroke
+		forkedPara.sb = SB * sbscale
+		if forceUpright : begin
+			forkedPara.slopeAngle  = 0
+		if mono : begin
+			forkedPara.diversityM  = 1
+		if mono2 : begin
+			forkedPara.diversityF  = 1
+			forkedPara.diversityI  = 1
+			forkedPara.diversityII = 1
+
+		return forkedPara
+
+	define [Miniature glyphs] : begin
+		return : Fork glyphs : MiniatureParaT.apply null { para :: [{}.slice.call arguments 1] }
+
+	define [Thinner glyphs p fMono] : begin
+		local forkedPara : Object.assign {.} para
+		forkedPara.unitWidthScalar = para.unitWidthScalar * p
+		forkedPara.width = Width * p
+		forkedPara.accentWidth = AccentWidth * p
+		forkedPara.jut = Jut * p
+		forkedPara.longjut = LongJut * p
+		forkedPara.diversityM = 1
+		if fMono : begin
+			forkedPara.diversityF  = 1
+			forkedPara.diversityI  = 1
+			forkedPara.diversityII = 1
+		#forkedPara.hookx = HookX * p
+		return : Fork glyphs forkedPara
+
+	define [Widen glyphs p psb] : begin
+		local forkedPara : Object.assign {.} para
+		forkedPara.unitWidthScalar = para.unitWidthScalar * p
+		forkedPara.width = Width * p
+		forkedPara.sb = SB * [fallback psb p]
+		forkedPara.accentWidth = AccentWidth * p
+		forkedPara.jut = Jut * p
+		forkedPara.longjut = LongJut * p
+		forkedPara.hookx = HookX * p
+		return : Fork glyphs forkedPara
+
+	glyph-block-export Fork Miniature MiniatureParaT Thinner Widen

@@ -1,0 +1,154 @@
+###### Automatic builds
+$$include '../../meta/macros.ptl'
+
+import [Dotless AnyDerivingCv DotlessOrNot getGrTree CvDecompose CcmpDecompose RequireCcmpDecompose] from "../../support/gr"
+import [fallback] from '../../support/utils'
+import as UnicodeKnowledge from "../../meta/unicode-knowledge"
+
+glyph-module
+
+glyph-block AutoBuild-Accents : begin
+	glyph-block-import Common-Derivatives : query-glyph refer-glyph
+
+	define [suggestName _name] : begin
+		local name _name
+		if [query-glyph name] : begin
+			local j 2
+			while [query-glyph (name + j)] : inc j
+			set name (name + j)
+		return name
+
+	define [suggestMappedName map key name] : begin
+		if map.(key) : return map.(key)
+		local amended : suggestName name
+		set map.(key) amended
+		return amended
+
+	# Build accented glyphs
+	define [isAboveMark mark] : begin
+		return : mark && mark.markAnchors && mark.markAnchors.above
+
+	define [MarkSubst lookup] : function [p j parts] : begin
+		foreach { k v } [Object.entries lookup] : begin
+			if (p === [query-glyph k]) : set parts.(j) [query-glyph v]
+
+	define iotaBelowToLF : MarkSubst UnicodeKnowledge.iotaBelowToLfTf
+	define ogonekBelowToTR : MarkSubst UnicodeKnowledge.ogonekBelowToTRTf
+	define grekUpperTonos : MarkSubst UnicodeKnowledge.upperGrekMarkToTonosTf
+
+	define [subParts parts] : begin
+		# Keep the semantics here synchronized with `ccmp` feature
+		# Handle dotless
+		local hasMarkAbove false
+		foreach p [items-of parts] : if [isAboveMark p] : set hasMarkAbove true
+		if (hasMarkAbove && [Dotless.get parts.0]) : begin
+			local dotless [query-glyph : Dotless.get parts.0]
+			if dotless : set parts.0 dotless
+
+		# replace below marks with trailing marks
+		if parts.0.baseAnchors.lf : parts.forEach iotaBelowToLF
+		if parts.0.baseAnchors.trailing : parts.forEach ogonekBelowToTR
+
+		# composite greek Marks
+		for [local j 0] (j < parts.length) [inc j] : begin
+			foreach { gidFirst seconds } [Object.entries UnicodeKnowledge.markCompositionTf]
+				if (parts.(j) === [query-glyph gidFirst])
+					foreach { gidSecond gidTo } [Object.entries seconds]
+						if (parts.(j + 1) === [query-glyph gidSecond]) : begin
+							set parts.(j) [query-glyph gidTo]; set parts.(j + 1) null
+
+		if parts.0.baseAnchors.grekUpperTonos : grekUpperTonos parts.1 1 parts
+
+		return : parts.filter : function [x] [not : not x]
+
+	define [pad _s n] : begin
+		local s _s
+		while (s.length < n) : s = '0' + s
+		return s
+
+	local foundDecompositions {.}
+
+	# When recursively building, `recursiveCodes` contain an array of "needed" Unicode list
+	local goalCodes : recursiveCodes || [range 0x0000 0xFFFF]
+	foreach code goalCodes : if [not : glyphStore.queryByUnicode code] : do
+		local str : String.fromCodePoint code
+		local nfd : fallback UnicodeKnowledge.decompositionOverrides.(str) : str.normalize 'NFD'
+		if (str !== nfd) : begin
+			local nfdChars : Array.from nfd
+			local parts     { }
+			local allFound true
+			foreach part [items-of nfdChars] : begin
+				local part : glyphStore.queryByUnicode [part.codePointAt 0]
+				if [not part]
+				: then : set allFound false
+				: else : parts.push part
+			if allFound : begin
+				local glyphName : 'u' + [code.toString 16 :.padStart 4 '0']
+				set parts : subParts parts
+				set foundDecompositions.(glyphName) { glyphName code parts }
+
+	local s_goalName  nothing
+	local s_code      nothing
+	local s_parts     nothing
+
+	define [recursivelyDecompose g sink] : begin
+		local decomposition : CvDecompose.get g
+		if decomposition : foreach gnPart [items-of decomposition] : begin
+			local g : query-glyph gnPart
+			if g : recursivelyDecompose g sink
+		: else : begin
+			sink.push : glyphStore.queryNameOf g
+
+	define construction : glyph-proc
+		include s_parts.0 AS_BASE ALSO_METRICS
+		local nonTrivial : AnyDerivingCv.hasNonDerivingVariants s_parts.0
+		if nonTrivial : console.log s_parts.0
+		foreach part [items-of : s_parts.slice 1] : if part : begin
+			include part
+			if (part.markAnchors && part.markAnchors.bottomright) : begin
+				eject-contour 'serifRB'
+				set nonTrivial true
+		if ([not nonTrivial] && [AnyDerivingCv.query s_parts.0]) : begin
+			local decomposeParts { }
+			foreach part [items-of s_parts] : recursivelyDecompose part decomposeParts
+			CvDecompose.set currentGlyph decomposeParts
+			if [RequireCcmpDecompose.get s_parts.0] : begin
+				local ccmpParts { }
+				foreach part [items-of s_parts] : ccmpParts.push : glyphStore.queryNameOf part
+				CcmpDecompose.set currentGlyph ccmpParts
+
+	define [RootGlyphProc goalName code parts] : begin
+		set s_goalName goalName
+		set s_code   code
+		set s_parts  parts
+		return : create-glyph goalName code construction
+
+	define [NeedBuildMesh glyphName part0Name] : begin
+		define g : query-glyph glyphName
+		define part0 : query-glyph part0Name
+		if [not g] : return false
+		if [not part0] : return false
+		if [not : CvDecompose.get g] : return true
+		if [DotlessOrNot.query part0] : return true
+		return false
+
+	foreach [_id : items-of : Object.keys foundDecompositions] : do
+		local { glyphName code parts } foundDecompositions.(_id)
+		local saved : RootGlyphProc glyphName code parts
+		if saved : begin
+			define part0Name : glyphStore.queryNameOf parts.0
+			if (parts.0 != [query-glyph part0Name]) : throw : new Error "Unreachable"
+
+		if [NeedBuildMesh glyphName part0Name] : begin
+			local dstTree {}
+			local targetNameMap  {.}
+			set targetNameMap.(part0Name) glyphName
+			local tree : getGrTree part0Name { DotlessOrNot AnyDerivingCv } query-glyph
+			foreach [{gr origBase relBase} : items-of tree] : begin
+				local origGN targetNameMap.(origBase)
+				if [not origGN] : throw : new Error 'Unreachable'
+				local relGN  : suggestMappedName targetNameMap relBase [gr.amendName origGN]
+				local parts1 : parts.slice 0
+				set parts1.0 : query-glyph relBase
+				if [not : query-glyph relGN] : RootGlyphProc relGN null parts1
+				if [query-glyph origGN] : gr.set [query-glyph origGN] relGN

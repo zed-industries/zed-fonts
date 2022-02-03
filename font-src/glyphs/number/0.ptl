@@ -1,0 +1,136 @@
+$$include '../../meta/macros.ptl'
+
+import [mix linreg clamp fallback] from '../../support/utils'
+import [AnyCv getGrMesh] from "../../support/gr"
+
+glyph-module
+
+glyph-block Digits-Zero : begin
+	glyph-block-import CommonShapes
+	glyph-block-import Common-Derivatives
+	glyph-block-import Digits-Shared : OnumHeight OnumMarks CodeLnum CodeOnum
+
+	define [OvalShapeT sink t b l r] : let [m : mix l r 0.5] : sink
+		widths.rhs
+		g4 (m - CorrectionOMidS) t
+		archv
+		g4 r [YSmoothMidR t b SmallSmoothA SmallSmoothB]
+		arcvh
+		g4 (m + CorrectionOMidS) b
+		archv
+		g4 l [YSmoothMidL t b SmallSmoothA SmallSmoothB]
+		arcvh
+		close
+
+	define [ZeroOutlineShapeT sink offsetX offsetY top] : OShapeT sink (top - offsetY) (offsetY) (SB + offsetX) (RightSB - offsetX)
+	define [ZeroOutlineShape top] : ZeroOutlineShapeT dispiro 0 0 top
+	define [ZeroOutlineMask top] : ZeroOutlineShapeT spiro-outline 1 1 top
+
+	define [ZeroOvalShapeT sink offsetX offsetY top] : OvalShapeT sink (top - offsetY) (offsetY) (SB + offsetX) (RightSB - offsetX)
+	define [ZeroOvalShape top] : ZeroOvalShapeT dispiro 0 0 top
+	define [ZeroOvalMask top] : ZeroOvalShapeT spiro-outline 1 1 top
+
+
+	define [ZeroSlash top] : dispiro
+		flat 0 (top * (1 - 0.77)) [widths.center OverlayStroke]
+		curl Width (top * 0.77)
+
+	define [ZeroReverseSlash top] : dispiro
+		flat 0 (top * 0.77) [widths.center OverlayStroke]
+		curl Width (top * (1 - 0.77))
+
+	define CircleInnerWidth : RightSB - SB - HVContrast * Stroke * 2
+	define SplitSlashGap : Stroke * HVContrast + [clamp (CircleInnerWidth / 5) (CircleInnerWidth / 3) ([AdviceStroke 5] * HVContrast)]
+
+	define [ZeroDotShape top] : begin
+		local halfDotWidth : Math.min DotRadius (CircleInnerWidth / 4)
+		return : OShapeOutline.NoOvershoot
+			top / 2 + DotRadius
+			top / 2 - DotRadius
+			Middle + halfDotWidth
+			Middle - halfDotWidth
+			Stroke * halfDotWidth * 2 / Width
+			SmoothAOf halfDotWidth (halfDotWidth * 2)
+			SmoothBOf halfDotWidth (halfDotWidth * 2)
+
+	define [ZeroLongDotShape top] : begin
+		local halfDotWidth : Math.min HalfStroke (CircleInnerWidth / 4)
+		local halfDotHeight : Math.max DotRadius : Math.min ((top - Stroke * 2) / 4) ((top - Stroke * 2 - (CircleInnerWidth - halfDotWidth * 2)) / 2)
+		return : OShapeOutline.NoOvershoot
+			top / 2 + halfDotHeight
+			top / 2 - halfDotHeight
+			Middle + halfDotWidth
+			Middle - halfDotWidth
+			Stroke * halfDotWidth * 2 / Width
+			SmoothAOf halfDotWidth (halfDotWidth * 2)
+			SmoothBOf halfDotWidth (halfDotWidth * 2)
+
+	define [ZeroOvalDotShape top] : begin
+		local halfDotWidth : Math.min DotRadius (CircleInnerWidth / 4)
+		return : OvalShapeT spiro-outline
+			top / 2 + DotRadius - O
+			top / 2 - DotRadius + O
+			Middle - halfDotWidth + OX
+			Middle + halfDotWidth - OX
+
+	define [ZeroOvalLongDotShape top] : begin
+		local halfDotWidth : Math.min HalfStroke (CircleInnerWidth / 4)
+		local halfDotHeight : Math.max DotRadius : Math.min ((top - Stroke * 2) / 4) ((top - Stroke * 2 - (CircleInnerWidth - halfDotWidth * 2)) / 2)
+		return : OvalShapeT spiro-outline
+			top / 2 + halfDotHeight - O
+			top / 2 - halfDotHeight + O
+			Middle - halfDotWidth + OX
+			Middle + halfDotWidth - OX
+
+	define ZeroConfig : object
+		'unslashed'               { ZeroOutlineShape ZeroOutlineMask null                 0             }
+		'slashed'                 { ZeroOutlineShape ZeroOutlineMask ZeroSlash            0             }
+		'reverseSlashed'          { ZeroOutlineShape ZeroOutlineMask ZeroReverseSlash     0             }
+		'slashedSplit'            { ZeroOutlineShape ZeroOutlineMask ZeroSlash            SplitSlashGap }
+		'reverseSlashedSplit'     { ZeroOutlineShape ZeroOutlineMask ZeroReverseSlash     SplitSlashGap }
+		'dotted'                  { ZeroOutlineShape ZeroOutlineMask ZeroDotShape         0             }
+		'longDotted'              { ZeroOutlineShape ZeroOutlineMask ZeroLongDotShape     0             }
+		'unslashedOval'           { ZeroOvalShape    ZeroOvalMask    null                 0             }
+		'slashedOval'             { ZeroOvalShape    ZeroOvalMask    ZeroSlash            0             }
+		'reverseSlashedOval'      { ZeroOvalShape    ZeroOvalMask    ZeroReverseSlash     0             }
+		'slashedSplitOval'        { ZeroOvalShape    ZeroOvalMask    ZeroSlash            SplitSlashGap }
+		'reverseSlashedSplitOval' { ZeroOvalShape    ZeroOvalMask    ZeroReverseSlash     SplitSlashGap }
+		'dottedOval'              { ZeroOvalShape    ZeroOvalMask    ZeroOvalDotShape     0             }
+		'longDottedOval'          { ZeroOvalShape    ZeroOvalMask    ZeroOvalLongDotShape 0             }
+
+	define Infixes : object
+		'lnum' { CAP        [function [] : MarkSet.capital] }
+		'onum' { OnumHeight [function [] : OnumMarks.e]     }
+
+	foreach { suffix { Outline Mask Overlay gap } } [Object.entries ZeroConfig] : begin
+		foreach { infix { height Marks } } [Object.entries Infixes] : begin
+			create-glyph "zero.\(infix).\(suffix)" : glyph-proc
+				include : Marks
+				include : Outline height
+				if Overlay : if Mask
+					then : include : intersection [Overlay height]
+						WithTransform [ApparentTranslate (-gap) 0] [Mask height]
+						WithTransform [ApparentTranslate   gap  0] [Mask height]
+					else : include : Overlay height
+
+	select-variant 'zero.lnum' [CodeLnum '0'] (follow -- 'zero')
+	select-variant 'zero.onum' [CodeOnum '0'] (follow -- 'zero')
+	select-variant 'zero.lnum/forceSlashed' (follow -- 'zero/forceSlashed') (shapeFrom -- 'zero.lnum')
+	select-variant 'zero.onum/forceSlashed' (follow -- 'zero/forceSlashed') (shapeFrom -- 'zero.onum')
+	select-variant 'zero.lnum/forceUnslashed' (follow -- 'zero/forceUnslashed') (shapeFrom -- 'zero.lnum')
+	select-variant 'zero.onum/forceUnslashed' (follow -- 'zero/forceUnslashed') (shapeFrom -- 'zero.onum')
+
+	glyph-block-import Letter-Blackboard : BBS BBD
+	create-glyph 'mathbb/zero' 0x1D7D8 : glyph-proc
+		include : MarkSet.capital
+		include : OShape CAP 0 SB RightSB BBS
+		include : intersection
+			OShapeOutline.NoOvershoot CAP 0 SB RightSB BBS
+			union
+				VBarLeft  (SB + OX + BBD)      0 CAP BBS
+				VBarRight (RightSB - OX - BBD) 0 CAP BBS
+				intersection
+					Rect CAP 0 (SB + BBD) (RightSB - BBD)
+					dispiro
+						flat 0 (CAP * (1 - 0.77)) [widths.center BBS]
+						curl Width (CAP * 0.77)

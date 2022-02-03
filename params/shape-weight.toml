@@ -1,0 +1,96 @@
+[shapeWeight]
+canonicalStrokeWidthMin = 18  # sync with 100 entry below
+canonicalStrokeWidthMax = 108 # sync with 900 entry below
+
+[shapeWeight.blend.400]
+stroke = 70        # Primary stroke width
+contrast = 1.11    # Stroke width contrast
+sb = 64            # Primary sidebearings
+essRatio = 1.12    # Proportion of widen of center of "S"
+dotSize = 125      # Size of dots
+periodSize = 140   # Size of period
+
+jut = 85           # Length of slab serif
+vjut = 145         # Length of vertical slab serif
+longjut = 175      # Length of long serifs, like that in `i`.
+
+smooth = 195       # Vertical arc size in capital letters.
+smallsmooth = 200  # Vertical arc size in lowercase letters.
+
+rbalance = 60
+rbalance2 = 15
+tbalance = 50
+tbalance2 = 30
+jbalance = 63
+fbalance = 6
+onebalance = 30
+
+hook  = 165        # Hook depth in most letters.
+ahook = 130
+shook = 120
+jhook = 135
+fhook = 120
+hookx = 170
+rhook = 110
+
+cthin = 0.75
+cthinb = 0.5
+vtipfine = 0.8
+vtipfineSlab = 0.9
+
+
+[shapeWeight.blend.100]
+stroke = 18
+contrast = 1.08
+sb = 72
+essRatio = 1.12
+dotSize = 53
+periodSize = 55
+
+jut = 70
+vjut = 145
+smooth = 195
+rbalance = 60
+rbalance2 = 15
+cthin = 0.9
+cthinb = 0.9
+vtipfine = 1
+vtipfineSlab = 1
+
+
+[shapeWeight.blend.200]
+vtipfine = 1
+vtipfineSlab = 1
+
+[shapeWeight.blend.300]
+vtipfine = 0.9
+vtipfineSlab = 0.9
+
+[shapeWeight.blend.500]
+rbalance = 60
+rbalance2 = 15
+
+[shapeWeight.blend.600]
+# Interpolated
+
+[shapeWeight.blend.700]
+stroke = 96
+
+[shapeWeight.blend.800]
+# Interpolated
+
+[shapeWeight.blend.900]
+stroke = 114
+contrast = 1.20
+sb = 56
+essRatio = 1.05
+dotSize = 180
+periodSize = 200
+
+jut = 95
+vjut = 200
+smooth = 215
+rbalance = 50
+rbalance2 = 25
+cthin = 0.75
+cthinb = 0.5
