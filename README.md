@@ -4,3 +4,11 @@
 It is build for use in [Zed](zed.dev).
 
 You can read the [license here](README.md).
+
+## Building Zed Mono
+
+1. Install node modules with `npm install`
+2. Run `npm run build -- contents::zed-mono` to build the font.
+3. Output will be in `/dist`
+
+Don't check the `/dist` folder into the repo!
