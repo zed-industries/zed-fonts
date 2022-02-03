@@ -7,6 +7,8 @@ You can read the [license here](README.md).
 
 ## Building Zed Mono
 
+Custom configurations are set up in `private-build-plans.toml`.
+
 1. Install node modules with `npm install`
 2. Run `npm run build -- contents::zed-mono` to build the font.
 3. Output will be in `/dist`
