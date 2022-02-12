@@ -1,4 +1,8 @@
 # Generated from https://typeof.net/Iosevka/customizer
+# This build plan contains multiple fonts, be careful not to 
+# overwrite multiple when changing the configuration of one.
+
+# Zed Mono
 # To build: npm run build -- contents::zed-mono
 
 [buildPlans.zed-mono]
@@ -58,3 +62,24 @@ angle = 9.4
 shape = "italic"
 menu = "italic"
 css = "italic"
+
+# Zed Sans
+# To build: npm run build -- contents::zed-sans
+
+[buildPlans.zed-sans]
+family = "Zed Sans"
+spacing = "quasi-proportional"
+serifs = "sans"
+no-cv-ss = false
+
+  [buildPlans.zed-sans.variants]
+  inherits = "ss08"
+
+    [buildPlans.zed-sans.variants.design]
+    underscore = "above-baseline"
+    at = "fourfold"
+
+[buildPlans.zed-sans.widths.normal]
+shape = 600
+menu = 5
+css = "normal"
