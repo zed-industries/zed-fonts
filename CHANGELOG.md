@@ -1,3 +1,6 @@
+## Version 1.2.1
+- Symbols: `(`, `%`
+
 ## Version 1.2.0
 
 - Breaking change: We new include the condensed versions of our fonts in the builds ("Normal"), and the normal width ("Extended"). Not confusing at all, right?
