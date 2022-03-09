@@ -3,7 +3,7 @@
 # overwrite multiple when changing the configuration of one.
 
 # Zed Mono
-# To build: npm run build -- contents::zed-mono
+# To build: npm run build -- ttf-unhinted::zed-mono
 
 [buildPlans.zed-mono]
 family = "Zed Mono"
@@ -41,7 +41,7 @@ no-cv-ss = false
     question = "corner"
 
 # Zed Sans
-# To build: npm run build -- contents::zed-sans
+# To build: npm run build -- ttf-unhinted::zed-sans
 
 [buildPlans.zed-sans]
 family = "Zed Sans"
