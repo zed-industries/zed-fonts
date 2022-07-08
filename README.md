@@ -3,7 +3,7 @@
 
 They are built for use in [Zed](zed.dev). **Zed Sans** uses a quasi-proportional spacing to allow the font to still feel monospace while not having such wide gaps in a UI setting.
 
-You can read the [license here]([README.md](https://github.com/zed-industries/zed-fonts/blob/main/LICENSE.md)).
+You can read the license here: [README.md](https://github.com/zed-industries/zed-fonts/blob/main/LICENSE.md).
 
 ## Building Zed Mono
 
