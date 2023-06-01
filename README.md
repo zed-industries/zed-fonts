@@ -7,6 +7,8 @@ You can read the license here: [README.md](https://github.com/zed-industries/zed
 
 ## Building Zed Mono
 
+**Warning:** This is a pretty heavy operation. Don't be surprised to see your CPU jump to 100% for minutes to hours depending on your machine.
+
 Custom configurations are set up in `private-build-plans.toml`.
 
 1. Install node modules with `npm install`
