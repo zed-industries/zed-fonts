@@ -11,8 +11,9 @@ You can read the license here: [README.md](https://github.com/zed-industries/zed
 
 Custom configurations are set up in `private-build-plans.toml`.
 
-1. Install node modules with `npm install`
-2. Run `npm run build -- contents::zed-mono` to build the font.
-3. Output will be in `/dist`
+1. Pre-requisite: `ttfautohint`. `brew install ttfautohint`
+2. Install node modules with `npm install`
+3. Run `npm run build -- contents::zed-mono` to build the font.
+4. Output will be in `/dist`
 
 Don't check the `/dist` folder into the repo!
