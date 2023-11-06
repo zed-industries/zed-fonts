@@ -1,9 +1,10 @@
 # Zed Fonts
+
 **Zed Mono** & **Zed Sans** are custom builds of [Iosevka](https://github.com/be5invis/Iosevka) liscensed under the SIL Open Font License, Version 1.1.
 
 They are built for use in [Zed](https://zed.dev/). **Zed Sans** uses a quasi-proportional spacing to allow the font to still feel monospace while not having such wide gaps in a UI setting.
 
-You can read the license here: [README.md](https://github.com/zed-industries/zed-fonts/blob/main/LICENSE.md).
+You can read the license here: [LICENSE.md](https://github.com/zed-industries/zed-fonts/blob/main/LICENSE.md).
 
 ## Building Zed Mono
 
