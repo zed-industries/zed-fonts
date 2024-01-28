@@ -1,5 +1,5 @@
 # Generated from https://typeof.net/Iosevka/customizer
-# This build plan contains multiple fonts, be careful not to 
+# This build plan contains multiple fonts, be careful not to
 # overwrite multiple when changing the configuration of one.
 
 # Zed Mono
@@ -15,6 +15,45 @@ no-cv-ss = false
   inherits = "ss08"
 
     [buildPlans.zed-mono.variants.design]
+    capital-n = "standard"
+    capital-w = "curly"
+    capital-x = "straight-serifless"
+    g = "double-storey"
+    x = "curly-serifless"
+    y = "straight-turn"
+    eszet = "sulzbacher-descending"
+    zero = "slashed"
+    four = "semi-open"
+    five = "vertical-upper-left-bar"
+    seven = "straight-serifed"
+    eight = "two-circles"
+    nine = "straight-bar"
+    asterisk = "penta-high"
+    underscore = "above-baseline"
+    caret = "medium"
+    paren = "normal"
+    brace = "curly"
+    number-sign = "slanted"
+    ampersand = "closed"
+    dollar = "open"
+    percent = "rings-continuous-slash"
+    bar = "force-upright"
+    question = "corner"
+
+# Zed Mono NL (Zed Mono No Ligatures)
+# To build: npm run build -- ttf-unhinted::zed-mono-nl
+
+[buildPlans.zed-mono-nl]
+family = "Zed Mono NL"
+spacing = "normal"
+serifs = "sans"
+no-cv-ss = false
+no-ligation = true
+
+  [buildPlans.zed-mono-nl.variants]
+  inherits = "ss08"
+
+    [buildPlans.zed-mono-nl.variants.design]
     capital-n = "standard"
     capital-w = "curly"
     capital-x = "straight-serifless"
@@ -77,4 +116,3 @@ no-cv-ss = false
     percent = "rings-continuous-slash"
     bar = "force-upright"
     question = "corner"
-    
