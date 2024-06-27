@@ -1,0 +1,15 @@
+
+# Changes the name of the IBM fonts to Zed fonts.
+# Usage: fontforge -script change_font_name.pe input.ttf output.ttf
+
+Open($1)
+
+# Set the new font names while preserving the original weight and other properties
+SetFontNames("ZedPlexSans", "Zed Plex Sans", "Zed Plex Sans", "", "Copyright © 2024 IBM Corp. All rights reserved. Ligatures adapted from Fira Code (Copyright © 2015-2023 The Fira Code Project Authors). Ligatures further refined by Zed Industries, Inc. for enhanced readability and coding experience.", "3")
+SetUniqueID(0)
+SetTTFName(0x409,16,"Zed Plex Sans")
+SetTTFName(0x409,3,"Zed Plex Sans;20240627")
+
+
+# Generate the new font file
+Generate($2)
