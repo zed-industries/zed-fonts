@@ -29,7 +29,6 @@ node_modules
 .vscode
 
 # Special
-*.ttf
 *.7z
 test/
 preview/

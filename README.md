@@ -1,6 +1,6 @@
 # Zed Fonts
 
-* Zed Plex Mono is a fork of IBM Flex with ligatures added. It is stored in the `zed-plex` folder
+* Zed Plex Mono is a fork of IBM Flex with ligatures added. It is stored in the `zed-plex` folder.
 
 # Previous Zed Fonts
 
