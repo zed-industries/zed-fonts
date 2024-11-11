@@ -2,46 +2,46 @@
 # This build plan contains multiple fonts, be careful not to
 # overwrite multiple when changing the configuration of one.
 
+##########################################################
 # Zed Mono
 # To build: npm run build -- ttf-unhinted::zed-mono
+##########################################################
 
 [buildPlans.zed-mono]
 family = "Zed Mono"
 spacing = "normal"
 serifs = "sans"
 no-cv-ss = false
+exportGlyphNames = true
 
-  [buildPlans.zed-mono.variants]
-  inherits = "ss08"
+[buildPlans.zed-mono.variants]
+inherits = "ss08"
 
-    [buildPlans.zed-mono.variants.design]
-    capital-n = "standard"
-    capital-w = "curly"
-    capital-x = "straight-serifless"
-    g = "double-storey"
-    x = "curly-serifless"
-    y = "straight-turn"
-    eszet = "sulzbacher-descending"
-    zero = "slashed"
-    four = "semi-open"
-    five = "vertical-upper-left-bar"
-    seven = "straight-serifed"
-    eight = "two-circles"
-    nine = "straight-bar"
-    asterisk = "penta-high"
-    underscore = "above-baseline"
-    caret = "medium"
-    paren = "normal"
-    brace = "curly"
-    number-sign = "slanted"
-    ampersand = "closed"
-    dollar = "open"
-    percent = "rings-continuous-slash"
-    bar = "force-upright"
-    question = "corner"
+[buildPlans.zed-mono.variants.design]
+capital-n = "standard-serifless"
+capital-w = "curly-serifless"
+capital-x = "straight-serifless"
+y = "straight-turn-serifless"
+eszet = "sulzbacher-descending-serifless"
+zero = "slashed"
+four = "semi-open-serifless"
+five = "upright-arched-serifless"
+seven = "straight-serifed"
+eight = "two-circles"
+nine = "straight-bar"
+asterisk = "penta-high"
+underscore = "above-baseline"
+number-sign = "slanted"
+ampersand = "closed"
+percent = "rings-continuous-slash"
+bar = "force-upright"
+question = "corner"
 
+
+##########################################################
 # Zed Mono NL (Zed Mono No Ligatures)
 # To build: npm run build -- ttf-unhinted::zed-mono-nl
+##########################################################
 
 [buildPlans.zed-mono-nl]
 family = "Zed Mono NL"
@@ -50,69 +50,61 @@ serifs = "sans"
 no-cv-ss = false
 no-ligation = true
 
-  [buildPlans.zed-mono-nl.variants]
-  inherits = "ss08"
+[buildPlans.zed-mono-nl.variants]
+inherits = "ss08"
 
-    [buildPlans.zed-mono-nl.variants.design]
-    capital-n = "standard"
-    capital-w = "curly"
-    capital-x = "straight-serifless"
-    g = "double-storey"
-    x = "curly-serifless"
-    y = "straight-turn"
-    eszet = "sulzbacher-descending"
-    zero = "slashed"
-    four = "semi-open"
-    five = "vertical-upper-left-bar"
-    seven = "straight-serifed"
-    eight = "two-circles"
-    nine = "straight-bar"
-    asterisk = "penta-high"
-    underscore = "above-baseline"
-    caret = "medium"
-    paren = "normal"
-    brace = "curly"
-    number-sign = "slanted"
-    ampersand = "closed"
-    dollar = "open"
-    percent = "rings-continuous-slash"
-    bar = "force-upright"
-    question = "corner"
+[buildPlans.zed-mono-nl.variants.design]
+capital-n = "standard-serifless"
+capital-w = "curly-serifless"
+capital-x = "straight-serifless"
+y = "straight-turn-serifless"
+eszet = "sulzbacher-descending-serifless"
+zero = "slashed"
+four = "semi-open-serifless"
+five = "upright-arched-serifless"
+seven = "straight-serifed"
+eight = "two-circles"
+nine = "straight-bar"
+asterisk = "penta-high"
+underscore = "above-baseline"
+number-sign = "slanted"
+ampersand = "closed"
+percent = "rings-continuous-slash"
+bar = "force-upright"
+question = "corner"
 
+
+##########################################################
 # Zed Sans
 # To build: npm run build -- ttf-unhinted::zed-sans
+##########################################################
 
 [buildPlans.zed-sans]
 family = "Zed Sans"
 spacing = "quasi-proportional"
 serifs = "sans"
 no-cv-ss = false
+exportGlyphNames = true
 
-  [buildPlans.zed-sans.variants]
-  inherits = "ss08"
+[buildPlans.zed-sans.variants]
+inherits = "ss08"
 
-    [buildPlans.zed-sans.variants.design]
-    capital-n = "standard"
-    capital-w = "curly"
-    capital-x = "straight-serifless"
-    g = "double-storey"
-    x = "curly-serifless"
-    y = "straight-turn"
-    eszet = "sulzbacher-descending"
-    zero = "slashed"
-    four = "semi-open"
-    five = "vertical-upper-left-bar"
-    seven = "straight-serifed"
-    eight = "two-circles"
-    nine = "straight-bar"
-    asterisk = "penta-high"
-    underscore = "above-baseline"
-    caret = "medium"
-    paren = "normal"
-    brace = "curly"
-    number-sign = "slanted"
-    ampersand = "closed"
-    dollar = "open"
-    percent = "rings-continuous-slash"
-    bar = "force-upright"
-    question = "corner"
+[buildPlans.zed-sans.variants.design]
+capital-n = "standard-serifless"
+capital-w = "curly-serifless"
+capital-x = "straight-serifless"
+y = "straight-turn-serifless"
+eszet = "sulzbacher-descending-serifless"
+zero = "slashed"
+four = "semi-open-serifless"
+five = "upright-arched-serifless"
+seven = "straight-serifed"
+eight = "two-circles"
+nine = "straight-bar"
+asterisk = "penta-high"
+underscore = "above-baseline"
+number-sign = "slanted"
+ampersand = "closed"
+percent = "rings-continuous-slash"
+bar = "force-upright"
+question = "corner"
