@@ -1,0 +1,18 @@
+{
+  "remove_trailing_whitespace_on_save": true,
+  "ensure_final_newline_on_save": true,
+  "hard_tabs": false,
+  "languages": {
+    "JSON": {
+      "tab_size": 2
+    },
+    "JavaScript": {
+      "preferred_line_length": 100,
+      "tab_size": 4,
+      "hard_tabs": true
+    },
+    "YAML": {
+      "tab_size": 2
+    }
+  }
+}

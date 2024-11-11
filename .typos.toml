@@ -1,0 +1,16 @@
+[files]
+extend-exclude = [
+    ".git/",
+    "zed-iosevka/font-src",
+    "zed-iosevka/params",
+    "zed-iosevka/snapshot-src",
+    "zed-iosevka/utility",
+]
+
+[default]
+ignore-files = true
+ignore-hidden = false
+check-filename = true
+extend-ignore-re = [
+    'ot', # opentype as in 'ot-builder'
+]
