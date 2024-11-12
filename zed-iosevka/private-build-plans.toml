@@ -7,28 +7,32 @@
 # To build: npm run build -- ttf-unhinted::zed-mono
 ##########################################################
 
-[buildPlans.zed-mono]
+[buildPlans.ZedMono]
 family = "Zed Mono"
 spacing = "normal"
 serifs = "sans"
-no-cv-ss = false
+noCvSs = false
 exportGlyphNames = true
 
-[buildPlans.zed-mono.variants]
+[buildPlans.ZedMono.variants]
 inherits = "ss08"
 
-[buildPlans.zed-mono.variants.design]
-capital-n = "standard-serifless"
-capital-w = "curly-serifless"
-capital-x = "straight-serifless"
-y = "straight-turn-serifless"
-eszet = "sulzbacher-descending-serifless"
-zero = "slashed"
+[buildPlans.ZedMono.variants.design]
 four = "semi-open-serifless"
 five = "upright-arched-serifless"
 seven = "straight-serifed"
 eight = "two-circles"
 nine = "straight-bar"
+zero = "slashed"
+capital-n = "standard-serifless"
+capital-w = "curly-serifless"
+capital-x = "straight-serifless"
+capital-z = "straight-serifless"
+l = "serifed"
+t = "bent-hook"
+y = "straight-turn-serifless"
+z = "straight-serifless"
+eszet = "sulzbacher-descending-serifless"
 asterisk = "penta-high"
 underscore = "above-baseline"
 number-sign = "slanted"
@@ -36,6 +40,10 @@ ampersand = "closed"
 percent = "rings-continuous-slash"
 bar = "force-upright"
 question = "corner"
+
+# https://github.com/be5invis/Iosevka/issues/2555
+[buildPlans.ZedMono.excludeChars]
+ranges = [[0x1f1e6, 0x1f1ff]]
 
 
 ##########################################################
@@ -43,28 +51,32 @@ question = "corner"
 # To build: npm run build -- ttf-unhinted::zed-mono-nl
 ##########################################################
 
-[buildPlans.zed-mono-nl]
+[buildPlans.ZedMonoNL]
 family = "Zed Mono NL"
 spacing = "normal"
 serifs = "sans"
-no-cv-ss = false
-no-ligation = true
+noCvSs = false
+exportGlyphNames = true
 
-[buildPlans.zed-mono-nl.variants]
+[buildPlans.ZedMonoNL.variants]
 inherits = "ss08"
 
-[buildPlans.zed-mono-nl.variants.design]
-capital-n = "standard-serifless"
-capital-w = "curly-serifless"
-capital-x = "straight-serifless"
-y = "straight-turn-serifless"
-eszet = "sulzbacher-descending-serifless"
-zero = "slashed"
+[buildPlans.ZedMonoNL.variants.design]
 four = "semi-open-serifless"
 five = "upright-arched-serifless"
 seven = "straight-serifed"
 eight = "two-circles"
 nine = "straight-bar"
+zero = "slashed"
+capital-n = "standard-serifless"
+capital-w = "curly-serifless"
+capital-x = "straight-serifless"
+capital-z = "straight-serifless"
+l = "serifed"
+t = "bent-hook"
+y = "straight-turn-serifless"
+z = "straight-serifless"
+eszet = "sulzbacher-descending-serifless"
 asterisk = "penta-high"
 underscore = "above-baseline"
 number-sign = "slanted"
@@ -72,6 +84,10 @@ ampersand = "closed"
 percent = "rings-continuous-slash"
 bar = "force-upright"
 question = "corner"
+
+# https://github.com/be5invis/Iosevka/issues/2555
+[buildPlans.ZedMonoNL.excludeChars]
+ranges = [[0x1f1e6, 0x1f1ff]]
 
 
 ##########################################################
@@ -79,28 +95,32 @@ question = "corner"
 # To build: npm run build -- ttf-unhinted::zed-sans
 ##########################################################
 
-[buildPlans.zed-sans]
+[buildPlans.ZedSans]
 family = "Zed Sans"
 spacing = "quasi-proportional"
 serifs = "sans"
-no-cv-ss = false
+noCvSs = false
 exportGlyphNames = true
 
-[buildPlans.zed-sans.variants]
+[buildPlans.ZedSans.variants]
 inherits = "ss08"
 
-[buildPlans.zed-sans.variants.design]
-capital-n = "standard-serifless"
-capital-w = "curly-serifless"
-capital-x = "straight-serifless"
-y = "straight-turn-serifless"
-eszet = "sulzbacher-descending-serifless"
-zero = "slashed"
+[buildPlans.ZedSans.variants.design]
 four = "semi-open-serifless"
 five = "upright-arched-serifless"
 seven = "straight-serifed"
 eight = "two-circles"
 nine = "straight-bar"
+zero = "slashed"
+capital-n = "standard-serifless"
+capital-w = "curly-serifless"
+capital-x = "straight-serifless"
+capital-z = "straight-serifless"
+l = "serifed"
+t = "bent-hook"
+y = "straight-turn-serifless"
+z = "straight-serifless"
+eszet = "sulzbacher-descending-serifless"
 asterisk = "penta-high"
 underscore = "above-baseline"
 number-sign = "slanted"
@@ -108,3 +128,7 @@ ampersand = "closed"
 percent = "rings-continuous-slash"
 bar = "force-upright"
 question = "corner"
+
+# https://github.com/be5invis/Iosevka/issues/2555
+[buildPlans.ZedSans.excludeChars]
+ranges = [[0x1f1e6, 0x1f1ff]]

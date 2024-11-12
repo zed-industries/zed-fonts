@@ -1,0 +1,3 @@
+[submodule "zed-iosevka/iosevka"]
+	path = zed-iosevka/iosevka
+	url = https://github.com/be5invis/Iosevka
